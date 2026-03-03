@@ -226,8 +226,8 @@ static void my_MySQLstatus(RESULT * result)
         if (mysql_ping(&conex)) {
             error("[MySQL] server ping failed: %s", mysql_error(&conex));
             configured = 0;
-            value = -1;
-            SetResult(&result, R_NUMBER, &value);
+            value = "error";
+            SetResult(&result, R_STRING, value);
             return;
         }        
 
