@@ -148,7 +148,7 @@ WantedBy = multi-user.target
 This will probably apply to similar Ubuntu distros.
 
 In my case I found it helped to install these packages:
-- sudo apt install libtool-bin libmysqlclient-dev libgd-dev libvncserver libx11-dev libusb-1.0-0-dev
+- sudo apt install libtool-bin libmariadb-dev libgd-dev libvncserver libx11-dev libusb-1.0-0-dev
 
 Configure the build enviroment. To keep it simple I configured only for the DPF driver, which is the one that supports AX206 displays. From the top level of the repo directory:
 - aclocal
