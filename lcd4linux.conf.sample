@@ -6,7 +6,21 @@ Variables {
    tick 500
    tack 100
    minute 60000
+   backlight 7
 }
+
+Display dpf {
+    Driver     'DPF'
+    Port       'usb0'
+    Font       '6x8'
+    Foreground 'ffffff'
+    Background '000000'
+    Basecolor  '000000'
+    Orientation 1          # 0 = landscape, 1 = portrait
+			   # 2 = reverse landscape, 3 = reverse portrait
+    Backlight  backlight   # Backlight variable control, 0..7 (0=off, 7=max)
+}
+
 
 Display ACool {
     Driver 'serdisplib'
@@ -1342,7 +1356,8 @@ Layout Debug {
 
 
 
-Display 'ACool'
+Display 'dpf'
+#Display 'ACool'
 #Display 'SerDispLib'
 #Display 'LCD-Linux'
 #Display 'LCD2041'
