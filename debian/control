@@ -1,0 +1,28 @@
+Source: lcd4linux-ax206
+Section: utils
+Priority: optional
+Maintainer: amd989 <amd989@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13),
+               autoconf,
+               automake,
+               libtool,
+               pkg-config,
+               libusb-1.0-0-dev,
+               libgd-dev,
+               libvncserver-dev,
+               libx11-dev,
+               libxext-dev,
+               libxpm-dev
+Standards-Version: 4.6.0
+Homepage: https://github.com/amd989/lcd4linux-ax206
+
+Package: lcd4linux-ax206
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: LCD display driver for AX206 USB displays
+ LCD4Linux fork focused on AX206 USB LCD displays (AIDA64 3.5" USB displays)
+ with support for DPF, VNC, and X11 drivers. Reads system data via plugins
+ and renders widgets onto the display.
+ .
+ Features include pixel-level brightness control, VNC mirror display support,
+ TrueType font rendering, and graphical bar widgets with color thresholds.

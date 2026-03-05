@@ -1,0 +1,5 @@
+lcd4linux usr/bin
+dpf_sysinfo.conf etc/lcd4linux/examples
+dpf_320x240.conf etc/lcd4linux/examples
+lcd4linux.conf.sample etc/lcd4linux/examples
+debian/lcd4linux-ax206.service lib/systemd/system

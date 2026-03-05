@@ -1,0 +1,197 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            docker_platform: linux/amd64
+          - arch: arm64
+            docker_platform: linux/arm64
+          - arch: armhf
+            docker_platform: linux/arm/v7
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Extract version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build .deb package
+        run: |
+          docker run --rm --platform ${{ matrix.docker_platform }} \
+            -v "$PWD":/build -w /build \
+            debian:bookworm bash -c '
+              set -e
+              apt-get update
+              apt-get install -y --no-install-recommends \
+                build-essential debhelper autoconf automake libtool pkg-config \
+                libusb-1.0-0-dev libgd-dev libvncserver-dev \
+                libx11-dev libxext-dev libxpm-dev \
+                git
+              # Update changelog version from tag
+              sed -i "1s/([^)]*)/('"${{ steps.version.outputs.version }}"'-1)/" debian/changelog
+              dpkg-buildpackage -us -uc -b
+              mkdir -p output
+              mv ../*.deb output/
+            '
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb-${{ matrix.arch }}
+          path: output/*.deb
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: debs
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: debs/*.deb
+          generate_release_notes: true
+
+  publish-apt-repo:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+        continue-on-error: true
+
+      - name: Initialize gh-pages if needed
+        run: |
+          if [ ! -f index.html ]; then
+            git init
+            git checkout -b gh-pages
+          fi
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: incoming
+          merge-multiple: true
+
+      - name: Install reprepro
+        run: sudo apt-get update && sudo apt-get install -y reprepro
+
+      - name: Import or generate GPG key
+        run: |
+          if [ -n "${{ secrets.GPG_PRIVATE_KEY }}" ]; then
+            echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
+            GPG_KEY_ID=$(gpg --list-secret-keys --keyid-format long | grep sec | head -1 | awk '{print $2}' | cut -d'/' -f2)
+          else
+            # Generate a temporary key for signing (user should replace with proper key)
+            cat > /tmp/gpg-batch <<GPGEOF
+              %no-protection
+              Key-Type: RSA
+              Key-Length: 4096
+              Subkey-Type: RSA
+              Subkey-Length: 4096
+              Name-Real: lcd4linux-ax206
+              Name-Email: amd989@users.noreply.github.com
+              Expire-Date: 0
+          GPGEOF
+            gpg --batch --gen-key /tmp/gpg-batch
+            GPG_KEY_ID=$(gpg --list-secret-keys --keyid-format long | grep sec | head -1 | awk '{print $2}' | cut -d'/' -f2)
+            echo "::warning::Using auto-generated GPG key. For production, add GPG_PRIVATE_KEY secret."
+          fi
+          echo "GPG_KEY_ID=$GPG_KEY_ID" >> "$GITHUB_ENV"
+          gpg --armor --export "$GPG_KEY_ID" > gpg.key
+
+      - name: Configure reprepro
+        run: |
+          mkdir -p conf
+          cat > conf/distributions <<EOF
+          Origin: lcd4linux-ax206
+          Label: lcd4linux-ax206
+          Codename: stable
+          Architectures: amd64 arm64 armhf
+          Components: main
+          Description: LCD4Linux for AX206 USB displays
+          SignWith: ${{ env.GPG_KEY_ID }}
+          EOF
+
+      - name: Add packages to repo
+        run: |
+          for deb in incoming/*.deb; do
+            reprepro includedeb stable "$deb"
+          done
+
+      - name: Create index page
+        run: |
+          cat > index.html <<'HTMLEOF'
+          <!DOCTYPE html>
+          <html>
+          <head><title>lcd4linux-ax206 APT Repository</title></head>
+          <body>
+          <h1>lcd4linux-ax206 APT Repository</h1>
+          <h2>Quick Install</h2>
+          <pre>
+          curl -fsSL https://amd989.github.io/lcd4linux-ax206/setup.sh | sudo bash
+          sudo apt install lcd4linux-ax206
+          </pre>
+          <h2>Manual Setup</h2>
+          <pre>
+          curl -fsSL https://amd989.github.io/lcd4linux-ax206/gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/lcd4linux-ax206.gpg
+          echo "deb [signed-by=/usr/share/keyrings/lcd4linux-ax206.gpg] https://amd989.github.io/lcd4linux-ax206 stable main" | sudo tee /etc/apt/sources.list.d/lcd4linux-ax206.list
+          sudo apt update
+          sudo apt install lcd4linux-ax206
+          </pre>
+          </body>
+          </html>
+          HTMLEOF
+
+      - name: Create setup script
+        run: |
+          cat > setup.sh <<'SETUPEOF'
+          #!/bin/bash
+          set -e
+          echo "Adding lcd4linux-ax206 APT repository..."
+          curl -fsSL https://amd989.github.io/lcd4linux-ax206/gpg.key | gpg --dearmor -o /usr/share/keyrings/lcd4linux-ax206.gpg
+          echo "deb [signed-by=/usr/share/keyrings/lcd4linux-ax206.gpg] https://amd989.github.io/lcd4linux-ax206 stable main" > /etc/apt/sources.list.d/lcd4linux-ax206.list
+          apt-get update
+          echo "Done! You can now run: sudo apt install lcd4linux-ax206"
+          SETUPEOF
+          chmod +x setup.sh
+
+      - name: Deploy to GitHub Pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Clean up build artifacts, keep repo files
+          rm -rf incoming conf
+          git add -A
+          git commit -m "Update APT repo for ${GITHUB_REF_NAME}" || true
+          git push origin gh-pages --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

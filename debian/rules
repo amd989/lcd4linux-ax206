@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	./bootstrap
+	dh_auto_configure -- --with-drivers=DPF,VNC,X11
+
+override_dh_auto_build:
+	touch lcd4linux.c
+	dh_auto_build

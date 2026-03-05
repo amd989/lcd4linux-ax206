@@ -1,0 +1,12 @@
+[Unit]
+Description=LCD4Linux display daemon for AX206 USB displays
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/lcd4linux -F -c /etc/lcd4linux/lcd4linux.conf
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
