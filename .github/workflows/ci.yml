@@ -40,7 +40,7 @@ jobs:
               set -e
               apt-get update
               apt-get install -y --no-install-recommends \
-                build-essential debhelper autoconf automake libtool pkg-config \
+                build-essential debhelper autoconf automake libtool libtool-bin pkg-config \
                 libusb-1.0-0-dev libgd-dev libvncserver-dev \
                 libx11-dev libxext-dev libxpm-dev \
                 git

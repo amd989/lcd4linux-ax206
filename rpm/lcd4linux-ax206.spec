@@ -34,6 +34,8 @@ TrueType font rendering, and graphical bar widgets with color thresholds.
 
 %prep
 %setup -q
+# automake in gnu mode requires README; project uses README.md
+ln -sf README.md README
 
 %build
 ./bootstrap
