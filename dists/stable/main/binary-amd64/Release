@@ -1,0 +1,5 @@
+Component: main
+Origin: lcd4linux-ax206
+Label: lcd4linux-ax206
+Architecture: amd64
+Description: LCD4Linux for AX206 USB displays

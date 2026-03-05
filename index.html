@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head><title>lcd4linux-ax206 Package Repository</title></head>
+<body>
+<h1>lcd4linux-ax206 Package Repository</h1>
+
+<h2>Debian / Ubuntu / Mint (apt)</h2>
+<h3>Quick Install</h3>
+<pre>
+curl -fsSL https://amd989.github.io/lcd4linux-ax206/setup.sh | sudo bash
+sudo apt install lcd4linux-ax206
+</pre>
+<h3>Manual Setup</h3>
+<pre>
+curl -fsSL https://amd989.github.io/lcd4linux-ax206/gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/lcd4linux-ax206.gpg
+echo "deb [signed-by=/usr/share/keyrings/lcd4linux-ax206.gpg] https://amd989.github.io/lcd4linux-ax206 stable main" | sudo tee /etc/apt/sources.list.d/lcd4linux-ax206.list
+sudo apt update
+sudo apt install lcd4linux-ax206
+</pre>
+
+<h2>Rocky Linux / RHEL / Fedora (dnf)</h2>
+<h3>Quick Install</h3>
+<pre>
+curl -fsSL https://amd989.github.io/lcd4linux-ax206/setup-rpm.sh | sudo bash
+sudo dnf install lcd4linux-ax206
+</pre>
+<h3>Manual Setup</h3>
+<pre>
+sudo rpm --import https://amd989.github.io/lcd4linux-ax206/gpg.key
+sudo tee /etc/yum.repos.d/lcd4linux-ax206.repo &lt;&lt;EOF
+[lcd4linux-ax206]
+name=lcd4linux-ax206
+baseurl=https://amd989.github.io/lcd4linux-ax206/rpm/
+enabled=1
+gpgcheck=1
+gpgkey=https://amd989.github.io/lcd4linux-ax206/gpg.key
+EOF
+sudo dnf install lcd4linux-ax206
+</pre>
+</body>
+</html>

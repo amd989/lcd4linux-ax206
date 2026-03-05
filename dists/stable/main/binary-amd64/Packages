@@ -1,0 +1,40 @@
+Package: lcd4linux-ax206
+Version: 0.11.0-1
+Architecture: amd64
+Maintainer: amd989 <amd989@users.noreply.github.com>
+Installed-Size: 313
+Depends: libc6 (>= 2.34), libgd3 (>= 2.1.0~alpha~), libusb-1.0-0 (>= 2:1.0.8), libvncserver1 (>= 0.9.10), libx11-6
+Homepage: https://github.com/amd989/lcd4linux-ax206
+Priority: optional
+Section: utils
+Filename: pool/main/l/lcd4linux-ax206/lcd4linux-ax206_0.11.0-1_amd64.deb
+Size: 129652
+SHA256: 43732b0c4f7138d19a54ee0e9638300e1cafd346437701310119f6038d94bd52
+SHA1: a08d00a05892b29a68cb8de32025e36d26d739f5
+MD5sum: 23327c85bbb5c15b85b5d2bb6336b9c7
+Description: LCD display driver for AX206 USB displays
+ LCD4Linux fork focused on AX206 USB LCD displays (AIDA64 3.5" USB displays)
+ with support for DPF, VNC, and X11 drivers. Reads system data via plugins
+ and renders widgets onto the display.
+ .
+ Features include pixel-level brightness control, VNC mirror display support,
+ TrueType font rendering, and graphical bar widgets with color thresholds.
+
+Package: lcd4linux-ax206-dbgsym
+Source: lcd4linux-ax206
+Version: 0.11.0-1
+Auto-Built-Package: debug-symbols
+Architecture: amd64
+Maintainer: amd989 <amd989@users.noreply.github.com>
+Installed-Size: 293
+Depends: lcd4linux-ax206 (= 0.11.0-1)
+Priority: optional
+Section: debug
+Filename: pool/main/l/lcd4linux-ax206/lcd4linux-ax206-dbgsym_0.11.0-1_amd64.deb
+Size: 258812
+SHA256: 30829ca3276b6d9b2419a0d7ac155e104bfdd931c73b284726a099f40fe78004
+SHA1: 969f2631b09c4848cb77f3514371720c03ed8d9a
+MD5sum: 4c2593520e19228abff48e4aea987926
+Description: debug symbols for lcd4linux-ax206
+Build-Ids: 71ddcda1e21219845ebc3b0f247c082a4489b69b
+
