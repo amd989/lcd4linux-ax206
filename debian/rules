@@ -1,12 +1,19 @@
 #!/usr/bin/make -f
 
+export DH_VERBOSE=1
+
 %:
 	dh $@
 
-override_dh_auto_configure:
+override_dh_autoreconf:
 	./bootstrap
+
+override_dh_auto_configure:
 	dh_auto_configure -- --with-drivers=DPF,VNC,X11
 
 override_dh_auto_build:
 	touch lcd4linux.c
 	dh_auto_build
+
+override_dh_auto_clean:
+	[ ! -f Makefile ] || dh_auto_clean

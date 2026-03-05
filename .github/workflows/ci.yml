@@ -74,6 +74,8 @@ jobs:
             -v "$PWD":/build -w /build \
             rockylinux:9 bash -c '
               set -e
+              dnf install -y epel-release
+              dnf config-manager --set-enabled crb
               dnf install -y gcc make autoconf automake libtool pkgconfig \
                 libusbx-devel gd-devel libvncserver-devel \
                 libX11-devel libXext-devel libXpm-devel \
