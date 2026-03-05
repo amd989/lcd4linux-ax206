@@ -18,6 +18,7 @@ BuildRequires:  libvncserver-devel
 BuildRequires:  libX11-devel
 BuildRequires:  libXext-devel
 BuildRequires:  libXpm-devel
+BuildRequires:  gettext-devel
 
 Requires:       libusbx
 Requires:       gd
@@ -45,7 +46,6 @@ make %{?_smp_mflags}
 
 %install
 install -D -m 0755 lcd4linux %{buildroot}%{_bindir}/lcd4linux
-install -D -m 0644 dpf_sysinfo.conf %{buildroot}%{_sysconfdir}/lcd4linux/examples/dpf_sysinfo.conf
 install -D -m 0644 dpf_320x240.conf %{buildroot}%{_sysconfdir}/lcd4linux/examples/dpf_320x240.conf
 install -D -m 0644 lcd4linux.conf.sample %{buildroot}%{_sysconfdir}/lcd4linux/examples/lcd4linux.conf.sample
 install -D -m 0644 debian/lcd4linux-ax206.service %{buildroot}%{_unitdir}/lcd4linux-ax206.service

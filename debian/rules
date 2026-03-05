@@ -15,5 +15,8 @@ override_dh_auto_build:
 	touch lcd4linux.c
 	dh_auto_build
 
+override_dh_auto_install:
+	# skip make install; dh_install handles everything
+
 override_dh_auto_clean:
 	[ ! -f Makefile ] || dh_auto_clean

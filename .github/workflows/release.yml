@@ -95,7 +95,7 @@ jobs:
               dnf install -y gcc make autoconf automake libtool pkgconfig \
                 libusbx-devel gd-devel libvncserver-devel \
                 libX11-devel libXext-devel libXpm-devel \
-                rpm-build git systemd-rpm-macros
+                rpm-build git systemd-rpm-macros gettext-devel
               VERSION='"${{ steps.version.outputs.version }}"'
               # Create source tarball
               mkdir -p /root/rpmbuild/{SOURCES,SPECS}
