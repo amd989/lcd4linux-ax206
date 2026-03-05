@@ -46,7 +46,7 @@ jobs:
                 git
               dpkg-buildpackage -us -uc -b
               echo "=== .deb build successful ==="
-              dpkg-deb --info ../*.deb
+              for deb in ../*.deb; do dpkg-deb --info "$deb"; done
             '
 
   build-rpm:
