@@ -1,0 +1,89 @@
+name: CI Build Test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:  # manual trigger from GitHub Actions UI
+
+permissions:
+  contents: read
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            docker_platform: linux/amd64
+          - arch: arm64
+            docker_platform: linux/arm64
+          - arch: armhf
+            docker_platform: linux/arm/v7
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build .deb package
+        run: |
+          docker run --rm --platform ${{ matrix.docker_platform }} \
+            -v "$PWD":/build -w /build \
+            debian:bookworm bash -c '
+              set -e
+              apt-get update
+              apt-get install -y --no-install-recommends \
+                build-essential debhelper autoconf automake libtool pkg-config \
+                libusb-1.0-0-dev libgd-dev libvncserver-dev \
+                libx11-dev libxext-dev libxpm-dev \
+                git
+              dpkg-buildpackage -us -uc -b
+              echo "=== .deb build successful ==="
+              dpkg-deb --info ../*.deb
+            '
+
+  build-rpm:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            docker_platform: linux/amd64
+          - arch: aarch64
+            docker_platform: linux/arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build .rpm package
+        run: |
+          docker run --rm --platform ${{ matrix.docker_platform }} \
+            -v "$PWD":/build -w /build \
+            rockylinux:9 bash -c '
+              set -e
+              dnf install -y gcc make autoconf automake libtool pkgconfig \
+                libusbx-devel gd-devel libvncserver-devel \
+                libX11-devel libXext-devel libXpm-devel \
+                rpm-build git systemd-rpm-macros
+              mkdir -p /root/rpmbuild/{SOURCES,SPECS}
+              tar czf /root/rpmbuild/SOURCES/lcd4linux-ax206-0.11.0.tar.gz \
+                --transform "s,^\.,lcd4linux-ax206-0.11.0," \
+                --exclude=.git .
+              cp rpm/lcd4linux-ax206.spec /root/rpmbuild/SPECS/
+              rpmbuild -bb --define "_version 0.11.0" /root/rpmbuild/SPECS/lcd4linux-ax206.spec
+              echo "=== .rpm build successful ==="
+              rpm -qip /root/rpmbuild/RPMS/*/*.rpm
+            '
