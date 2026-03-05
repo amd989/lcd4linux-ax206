@@ -221,8 +221,9 @@ am__depfiles_remade = ./$(DEPDIR)/cfg.Po ./$(DEPDIR)/debug.Po \
 	./$(DEPDIR)/widget.Po ./$(DEPDIR)/widget_bar.Po \
 	./$(DEPDIR)/widget_gpo.Po ./$(DEPDIR)/widget_graphicbar.Po \
 	./$(DEPDIR)/widget_icon.Po ./$(DEPDIR)/widget_image.Po \
-	./$(DEPDIR)/widget_keypad.Po ./$(DEPDIR)/widget_text.Po \
-	./$(DEPDIR)/widget_timer.Po ./$(DEPDIR)/widget_ttf.Po
+	./$(DEPDIR)/widget_keypad.Po ./$(DEPDIR)/widget_sparkline.Po \
+	./$(DEPDIR)/widget_text.Po ./$(DEPDIR)/widget_timer.Po \
+	./$(DEPDIR)/widget_ttf.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -565,6 +566,7 @@ font_6x8_bold.h               \
 widget_image.c widget_image.h \
 widget_ttf.c widget_ttf.h \
 widget_graphicbar.c  widget_graphicbar.h \
+widget_sparkline.c widget_sparkline.h \
                               \
 lcd4linux_i2c.h               \
                               \
@@ -867,6 +869,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/widget_icon.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/widget_image.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/widget_keypad.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/widget_sparkline.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/widget_text.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/widget_timer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/widget_ttf.Po@am__quote@ # am--include-marker
@@ -1314,6 +1317,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/widget_icon.Po
 	-rm -f ./$(DEPDIR)/widget_image.Po
 	-rm -f ./$(DEPDIR)/widget_keypad.Po
+	-rm -f ./$(DEPDIR)/widget_sparkline.Po
 	-rm -f ./$(DEPDIR)/widget_text.Po
 	-rm -f ./$(DEPDIR)/widget_timer.Po
 	-rm -f ./$(DEPDIR)/widget_ttf.Po
@@ -1497,6 +1501,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/widget_icon.Po
 	-rm -f ./$(DEPDIR)/widget_image.Po
 	-rm -f ./$(DEPDIR)/widget_keypad.Po
+	-rm -f ./$(DEPDIR)/widget_sparkline.Po
 	-rm -f ./$(DEPDIR)/widget_text.Po
 	-rm -f ./$(DEPDIR)/widget_timer.Po
 	-rm -f ./$(DEPDIR)/widget_ttf.Po
