@@ -1,8 +1,6 @@
 name: CI Build Test
 
 on:
-  push:
-    branches: [master]
   pull_request:
     branches: [master]
   workflow_dispatch:  # manual trigger from GitHub Actions UI
