@@ -136,6 +136,7 @@ widget_image.c widget_image.h \
 widget_ttf.c widget_ttf.h \
 widget_graphicbar.c  widget_graphicbar.h \
 widget_sparkline.c widget_sparkline.h \
+widget_gauge.c widget_gauge.h \
                               \
 lcd4linux_i2c.h               \
                               \
