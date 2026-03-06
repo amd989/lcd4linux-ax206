@@ -15,8 +15,10 @@ As an example here is a screen capture of a VNC client mirroring the physical AX
 - Display mirroring (e.g. DPF + VNC for remote viewing)
 - Pixel-level brightness control (0-100) separate from hardware backlight (0-7)
 - GraphicBar widget with color thresholds
+- (NEW) Sparkline widget for line graph history (e.g. temperature, I/O over time)
 - TrueType font rendering with background color support
 - `precision()` function for formatted numeric display
+- (NEW) Pre-built themes for system monitoring and NAS displays
 - MySQL/MariaDB reconnect fix
 
 ## Warnings
@@ -237,6 +239,41 @@ Fields:
 - `style`: Set to 'H' for hollow bar.
 - `update`: Update time in ms.
 
+## Sparkline Widget
+
+A line graph widget that records historical values in a ring buffer and renders them as a connected line graph. Useful for visualizing trends over time such as temperature, CPU usage, or disk I/O.
+
+- One sample per pixel column — a 140px wide widget stores 140 data points
+- Auto-scales Y-axis by default, with optional fixed `min`/`max` overrides
+- Color thresholds for value ranges (same as GraphicBar)
+
+Fields:
+- `class`: Must be 'Sparkline'.
+- `expression`: The expression to sample on each update.
+- `length`: Length of the graph axis in pixels (number of samples stored).
+- `width`: Thickness of the graph in pixels.
+- `min` / `max`: Y-axis range. If omitted, auto-scales to fit the data.
+- `color`: Line color (RGB/RGBA). Default: bright green.
+- `background`: Background color (RGB/RGBA). Default: dark gray.
+- `valuelow` / `colorlow`: Threshold and color for low values.
+- `valuehigh` / `colorhigh`: Threshold and color for high values.
+- `update`: Update/sample interval in ms.
+
+Example:
+```
+Widget CPU_Spark {
+    class      'Sparkline'
+    expression  proc_stat::cpu('user', 500)
+    width       50
+    length      140
+    color       '00ff00'
+    background  '333333'
+    min         0
+    max         100
+    update      1000
+}
+```
+
 ## precision function
 
 Formats floating point numbers with a fixed number of decimal places (adds trailing zeros for column alignment).  The output is a string, so use it after any math.
@@ -245,3 +282,38 @@ Example:
 ```
 expression  precision(file::readline(F_PW, 3), 3) . ' kW '
 ```
+
+## Themes
+
+Pre-built themes are included in the `themes/` directory. Each theme contains a config file, a background image, and a preview screenshot. To use a theme, copy or symlink its config file:
+
+```bash
+lcd4linux -F -c themes/SimpleWhite/dpf_simplewhite.conf
+```
+
+### Available themes
+
+**System monitor themes** — general-purpose system information displays for 320x480 portrait (Orientation 3):
+
+| Theme | Description |
+|-------|-------------|
+| [SimpleWhite](themes/SimpleWhite/) | White-on-dark system monitor with CPU, RAM, disk, and network stats |
+| [SimpleBlue](themes/SimpleBlue/), [SimpleGreen](themes/SimpleGreen/), [SimpleRed](themes/SimpleRed/), [SimpleOrange](themes/SimpleOrange/), [SimplePurple](themes/SimplePurple/), [SimpleYellow](themes/SimpleYellow/), [SimpleNeon](themes/SimpleNeon/) | Color variants of the system monitor layout |
+| [SimpleBlueFall](themes/SimpleBlueFall/), [SimpleGreenFall](themes/SimpleGreenFall/), [SimpleOrangeFall](themes/SimpleOrangeFall/), [SimplePurpleFall](themes/SimplePurpleFall/), [SimpleRedFall](themes/SimpleRedFall/), [SimpleYellowFall](themes/SimpleYellowFall/) | Alternate color variants |
+| [SimpleBlueGauge](themes/SimpleBlueGauge/), [SimpleGreenGauge](themes/SimpleGreenGauge/), [SimpleOrangeGauge](themes/SimpleOrangeGauge/), [SimplePurpleGauge](themes/SimplePurpleGauge/), [SimpleRedGauge](themes/SimpleRedGauge/), [SimpleYellowGauge](themes/SimpleYellowGauge/), [SimpleNeonGauge](themes/SimpleNeonGauge/), [SimpleRedGaugeRedBg](themes/SimpleRedGaugeRedBg/) | Gauge-style variants with GraphicBar meters |
+| [SimpleMulticolor](themes/SimpleMulticolor/) | Multi-color variant |
+| [Cyberpunk](themes/Cyberpunk/) | Cyberpunk-styled system monitor |
+
+**NAS themes** — 4-bay drive monitor layouts designed for NAS/server use:
+
+| Theme | Description |
+|-------|-------------|
+| [SimpleWhiteNas](themes/SimpleWhiteNas/) | 4-bay NAS monitor showing drive usage %, used/total size, temperature, and temperature sparkline history per drive. Requires the `drivetemp` kernel module. |
+| [SimpleWhiteNasIO](themes/SimpleWhiteNasIO/) | 4-bay NAS monitor showing drive usage %, temperature, size, and disk I/O throughput sparkline with M/s overlay per drive. Uses `/sys/block/*/stat` for I/O delta calculation. |
+
+The NAS themes require editing the `Variables` section to match your drive configuration (partition paths, block device names, display labels). Both support VNC mirroring out of the box — just install `libvncserver` and build with `--with-drivers=DPF,VNC`.
+
+### Theme design credits
+
+Original theme designs by [@takattila](https://github.com/takattila) from [turing-smart-screen-python](https://github.com/mathoudebine/turing-smart-screen-python), adapted for lcd4linux. Licensed under GPL-3.0.
+
