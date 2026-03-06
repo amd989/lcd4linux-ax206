@@ -8377,7 +8377,7 @@ fi
 if test "$GRAPHIC" = "yes"; then
    DRIVERS="$DRIVERS drv_generic_graphic.o"
    if test "$has_gd" = "true"; then
-      DRIVERS="$DRIVERS widget_image.o widget_ttf.o widget_graphicbar.o"
+      DRIVERS="$DRIVERS widget_image.o widget_ttf.o widget_graphicbar.o widget_sparkline.o"
       DRVLIBS="$DRVLIBS -lgd"
 
 printf "%s\n" "#define WITH_GD 1" >>confdefs.h

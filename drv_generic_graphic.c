@@ -71,6 +71,7 @@
 #include "widget_image.h"
 #include "widget_ttf.h"
 #include "widget_graphicbar.h"
+#include "widget_sparkline.h"
 #include "rgb.h"
 #include "drv.h"
 #include "drv_generic.h"
@@ -701,6 +702,10 @@ int drv_generic_graphic_init(const char *section, const char *driver)
     widget_register(&wc);
     
     wc = Widget_GraphicBar;
+    wc.draw = drv_generic_graphic_image_draw;
+    widget_register(&wc);
+
+    wc = Widget_Sparkline;
     wc.draw = drv_generic_graphic_image_draw;
     widget_register(&wc);
 #endif
