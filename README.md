@@ -1,12 +1,13 @@
 # LCD4Linux for AX206 USB Displays
 
-This is a fork of [MaxWiesel's lcd4linux-max](https://github.com/MaxWiesel/lcd4linux-max) focused on supporting AX206 USB LCD displays (commonly sold as "AIDA64 3.5" USB displays") on modern Linux systems including Rocky/RHEL, Ubuntu/Mint, and Raspberry Pi.
+This is a fork of [ukoda's lcd4linux-ax206](https://github.com/ukoda/lcd4linux-ax206), which itself is a fork of [MaxWiesel's lcd4linux-max](https://github.com/MaxWiesel/lcd4linux-max), focused on making AX206 USB LCD displays (commonly sold as "AIDA64 3.5" USB displays") easy to set up on modern Linux systems including Rocky/RHEL, Ubuntu/Mint, and Raspberry Pi.
+
+The 3.5" AX206 USB displays are cheap and widely available, but most of the software ecosystem around them targets Windows (AIDA64) or uses Turing Smart Screen protocols that these displays aren't compatible with. LCD4Linux supports them natively on Linux, but getting a good-looking setup has historically required writing config files from scratch with little visual guidance.
+
+This fork aims to fix that by providing ready-to-use themes ported from the [Turing Smart Screen](https://github.com/mathoudebine/turing-smart-screen-python) theme ecosystem and adapted to work with LCD4Linux's config system. In the process, new widgets were added: **Gauge** (circular arc rings) and **Sparkline** (line graph history); to support the variety of visual styles these themes use. The goal is to make it as easy as possible to plug in a display and have a polished system monitor running in minutes.
 
 The best source for general LCD4Linux information is [The unofficial LCD4Linux Wiki](https://wiki.lcd4linux.tk/doku.php/start).
 
-I also have another repo, https://github.com/ukoda/ax206vncclient, that provides an AX206 VNC client that can be paired up with the LCD4Linux VNC server display driver.  When paired with the display mirroring feature added in this repo it makes for an easy way to have an AX206 on a server in a rack and see the same information on a remote AX206 display.
-
-As an example here is a screen capture of a VNC client mirroring the physical AX206 display on a remote server:
 ![Example](lcd4linux_example.png)
 
 ## Features
@@ -15,11 +16,14 @@ As an example here is a screen capture of a VNC client mirroring the physical AX
 - Display mirroring (e.g. DPF + VNC for remote viewing)
 - Pixel-level brightness control (0-100) separate from hardware backlight (0-7)
 - GraphicBar widget with color thresholds
-- (NEW) Sparkline widget for line graph history (e.g. temperature, I/O over time)
 - TrueType font rendering with background color support
 - `precision()` function for formatted numeric display
-- (NEW) Pre-built themes for system monitoring and NAS displays
 - MySQL/MariaDB reconnect fix
+- (NEW✨) APT and DNF package repositories — install with `apt install` or `dnf install`, with automatic updates
+- (NEW✨) Pre-built packages for amd64, arm64, and armhf (including Raspberry Pi)
+- (NEW✨) Pre-built themes for system monitoring and NAS displays
+- (NEW✨) Sparkline widget for line graph history (e.g. temperature, I/O over time)
+- (NEW✨) Gauge widget for circular arc gauges (CPU, RAM, disk usage rings)
 
 ## Warnings
 
@@ -217,6 +221,46 @@ Display VNC {
 
 NB: Only tested with DPF paired with VNC or X11 drivers.
 
+## Gauge Widget
+
+A circular arc gauge widget that fills proportionally to an expression value. Draws a ring arc using GD, with configurable start angle, sweep, thickness, and fill direction. Supports color thresholds and reverse fill mode.
+
+Fields:
+- `class`: Must be 'Gauge'.
+- `expression`: The expression for the gauge value.
+- `width`: Width of the bounding box in pixels.
+- `height`: Height of the bounding box in pixels.
+- `min` / `max`: Value range. Defaults to 0–100.
+- `start`: Start angle in degrees (GD convention: 0 = 3 o'clock, increases clockwise). Default: 135.
+- `sweep`: Total arc sweep in degrees. Default: 270.
+- `thickness`: Ring thickness in pixels. If 0 or omitted, draws a filled pie wedge.
+- `direction`: Fill direction: 'CW' (clockwise, default) or 'CCW' (counter-clockwise).
+- `color`: Foreground (filled) arc color (RGB/RGBA). Default: bright green.
+- `background`: Background (unfilled) arc color (RGB/RGBA). Use `000000ff` for transparent.
+- `valuelow` / `colorlow`: Threshold and color for low values.
+- `valuehigh` / `colorhigh`: Threshold and color for high values.
+- `reverse`: Set to 1 to invert fill (foreground shows remaining portion).
+- `update`: Update time in ms.
+
+Example:
+```
+Widget CPU_Gauge {
+    class 'Gauge'
+    expression proc_stat::cpu('busy', 500)
+    width 66
+    height 66
+    min 0
+    max 100
+    start 180
+    sweep 360
+    thickness 5
+    color '35bf5c'
+    background '000000ff'
+    update 500
+    direction 'CCW'
+}
+```
+
 ## GraphicBar Widget
 
 A pixel-based bar graph widget for graphics displays. Key differences from the text-mode Bar widget:
@@ -293,7 +337,7 @@ lcd4linux -F -c themes/SimpleWhite/dpf_simplewhite.conf
 
 ### Available themes
 
-**System monitor themes** — general-purpose system information displays for 320x480 portrait (Orientation 3):
+**System monitor themes** — general-purpose system information displays for 320x480 portrait:
 
 | Theme | Description |
 |-------|-------------|
@@ -303,6 +347,14 @@ lcd4linux -F -c themes/SimpleWhite/dpf_simplewhite.conf
 | [SimpleBlueGauge](themes/SimpleBlueGauge/), [SimpleGreenGauge](themes/SimpleGreenGauge/), [SimpleOrangeGauge](themes/SimpleOrangeGauge/), [SimplePurpleGauge](themes/SimplePurpleGauge/), [SimpleRedGauge](themes/SimpleRedGauge/), [SimpleYellowGauge](themes/SimpleYellowGauge/), [SimpleNeonGauge](themes/SimpleNeonGauge/), [SimpleRedGaugeRedBg](themes/SimpleRedGaugeRedBg/) | Gauge-style variants with GraphicBar meters |
 | [SimpleMulticolor](themes/SimpleMulticolor/) | Multi-color variant |
 | [Cyberpunk](themes/Cyberpunk/) | Cyberpunk-styled system monitor |
+| [bash-dark-green](themes/bash-dark-green/) | Hacker/terminal-style green-on-black with CPU, RAM, network, and disk gauges |
+| [bash-dark-green-gpu](themes/bash-dark-green-gpu/) | GPU variant of bash-dark-green adding GPU usage, VRAM, and temperature |
+
+**Landscape themes** — 480x320 landscape system monitors (Orientation 0):
+
+| Theme | Description |
+|-------|-------------|
+| [Cyberdeck](themes/Cyberdeck/) | Multi-gauge cyberdeck display with CPU, GPU, RAM, fan speeds, FPS sparkline, and network stats |
 
 **NAS themes** — 4-bay drive monitor layouts designed for NAS/server use:
 
