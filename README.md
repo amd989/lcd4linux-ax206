@@ -1,12 +1,13 @@
 # LCD4Linux for AX206 USB Displays
 
-This is a fork of [MaxWiesel's lcd4linux-max](https://github.com/MaxWiesel/lcd4linux-max) focused on supporting AX206 USB LCD displays (commonly sold as "AIDA64 3.5" USB displays") on modern Linux systems including Rocky/RHEL, Ubuntu/Mint, and Raspberry Pi.
+This is a fork of [ukoda's lcd4linux-ax206](https://github.com/ukoda/lcd4linux-ax206), which itself is a fork of [MaxWiesel's lcd4linux-max](https://github.com/MaxWiesel/lcd4linux-max), focused on making AX206 USB LCD displays (commonly sold as "AIDA64 3.5" USB displays") easy to set up on modern Linux systems including Rocky/RHEL, Ubuntu/Mint, and Raspberry Pi.
+
+The 3.5" AX206 USB displays are cheap and widely available, but most of the software ecosystem around them targets Windows (AIDA64) or uses Turing Smart Screen protocols that these displays aren't compatible with. LCD4Linux supports them natively on Linux, but getting a good-looking setup has historically required writing config files from scratch with little visual guidance.
+
+This fork aims to fix that by providing ready-to-use themes ported from the [Turing Smart Screen](https://github.com/mathoudebine/turing-smart-screen-python) theme ecosystem and adapted to work with LCD4Linux's config system. In the process, new widgets were added: **Gauge** (circular arc rings) and **Sparkline** (line graph history); to support the variety of visual styles these themes use. The goal is to make it as easy as possible to plug in a display and have a polished system monitor running in minutes.
 
 The best source for general LCD4Linux information is [The unofficial LCD4Linux Wiki](https://wiki.lcd4linux.tk/doku.php/start).
 
-I also have another repo, https://github.com/ukoda/ax206vncclient, that provides an AX206 VNC client that can be paired up with the LCD4Linux VNC server display driver.  When paired with the display mirroring feature added in this repo it makes for an easy way to have an AX206 on a server in a rack and see the same information on a remote AX206 display.
-
-As an example here is a screen capture of a VNC client mirroring the physical AX206 display on a remote server:
 ![Example](lcd4linux_example.png)
 
 ## Features
@@ -18,6 +19,8 @@ As an example here is a screen capture of a VNC client mirroring the physical AX
 - TrueType font rendering with background color support
 - `precision()` function for formatted numeric display
 - MySQL/MariaDB reconnect fix
+- (NEW✨) APT and DNF package repositories — install with `apt install` or `dnf install`, with automatic updates
+- (NEW✨) Pre-built packages for amd64, arm64, and armhf (including Raspberry Pi)
 - (NEW✨) Pre-built themes for system monitoring and NAS displays
 - (NEW✨) Sparkline widget for line graph history (e.g. temperature, I/O over time)
 - (NEW✨) Gauge widget for circular arc gauges (CPU, RAM, disk usage rings)
