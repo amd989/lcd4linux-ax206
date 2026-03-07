@@ -212,11 +212,12 @@ jobs:
 
       - name: Create YUM/DNF repo
         run: |
+          rm -rf rpm/packages rpm/repodata
           mkdir -p rpm/packages
           cp incoming-rpm/*.rpm rpm/packages/
-          gpg --detach-sign --armor rpm/packages/*.rpm 2>/dev/null || true
+          gpg --batch --pinentry-mode loopback --detach-sign --armor rpm/packages/*.rpm 2>/dev/null || true
           createrepo_c rpm/
-          gpg --detach-sign --armor rpm/repodata/repomd.xml
+          gpg --batch --pinentry-mode loopback --detach-sign --armor rpm/repodata/repomd.xml
 
       - name: Create index page
         run: |
