@@ -138,6 +138,7 @@ static void widget_gauge_render(const char *Name, WIDGET_GAUGE *Gauge)
 
     Gauge->gdImage = gdImageCreateTrueColor(Gauge->xsize, Gauge->ysize);
     gdImageSaveAlpha(Gauge->gdImage, 1);
+    gdImageAlphaBlending(Gauge->gdImage, 0);
 
     if (Gauge->gdImage == NULL) {
         error("Warning: Gauge %s: Create failed!", Name);
