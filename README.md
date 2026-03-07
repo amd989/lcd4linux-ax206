@@ -15,11 +15,12 @@ As an example here is a screen capture of a VNC client mirroring the physical AX
 - Display mirroring (e.g. DPF + VNC for remote viewing)
 - Pixel-level brightness control (0-100) separate from hardware backlight (0-7)
 - GraphicBar widget with color thresholds
-- (NEW) Sparkline widget for line graph history (e.g. temperature, I/O over time)
 - TrueType font rendering with background color support
 - `precision()` function for formatted numeric display
-- (NEW) Pre-built themes for system monitoring and NAS displays
 - MySQL/MariaDB reconnect fix
+- (NEW✨) Pre-built themes for system monitoring and NAS displays
+- (NEW✨) Sparkline widget for line graph history (e.g. temperature, I/O over time)
+- (NEW✨) Gauge widget for circular arc gauges (CPU, RAM, disk usage rings)
 
 ## Warnings
 
@@ -217,6 +218,46 @@ Display VNC {
 
 NB: Only tested with DPF paired with VNC or X11 drivers.
 
+## Gauge Widget
+
+A circular arc gauge widget that fills proportionally to an expression value. Draws a ring arc using GD, with configurable start angle, sweep, thickness, and fill direction. Supports color thresholds and reverse fill mode.
+
+Fields:
+- `class`: Must be 'Gauge'.
+- `expression`: The expression for the gauge value.
+- `width`: Width of the bounding box in pixels.
+- `height`: Height of the bounding box in pixels.
+- `min` / `max`: Value range. Defaults to 0–100.
+- `start`: Start angle in degrees (GD convention: 0 = 3 o'clock, increases clockwise). Default: 135.
+- `sweep`: Total arc sweep in degrees. Default: 270.
+- `thickness`: Ring thickness in pixels. If 0 or omitted, draws a filled pie wedge.
+- `direction`: Fill direction: 'CW' (clockwise, default) or 'CCW' (counter-clockwise).
+- `color`: Foreground (filled) arc color (RGB/RGBA). Default: bright green.
+- `background`: Background (unfilled) arc color (RGB/RGBA). Use `000000ff` for transparent.
+- `valuelow` / `colorlow`: Threshold and color for low values.
+- `valuehigh` / `colorhigh`: Threshold and color for high values.
+- `reverse`: Set to 1 to invert fill (foreground shows remaining portion).
+- `update`: Update time in ms.
+
+Example:
+```
+Widget CPU_Gauge {
+    class 'Gauge'
+    expression proc_stat::cpu('busy', 500)
+    width 66
+    height 66
+    min 0
+    max 100
+    start 180
+    sweep 360
+    thickness 5
+    color '35bf5c'
+    background '000000ff'
+    update 500
+    direction 'CCW'
+}
+```
+
 ## GraphicBar Widget
 
 A pixel-based bar graph widget for graphics displays. Key differences from the text-mode Bar widget:
@@ -293,7 +334,7 @@ lcd4linux -F -c themes/SimpleWhite/dpf_simplewhite.conf
 
 ### Available themes
 
-**System monitor themes** — general-purpose system information displays for 320x480 portrait (Orientation 3):
+**System monitor themes** — general-purpose system information displays for 320x480 portrait:
 
 | Theme | Description |
 |-------|-------------|
@@ -303,6 +344,14 @@ lcd4linux -F -c themes/SimpleWhite/dpf_simplewhite.conf
 | [SimpleBlueGauge](themes/SimpleBlueGauge/), [SimpleGreenGauge](themes/SimpleGreenGauge/), [SimpleOrangeGauge](themes/SimpleOrangeGauge/), [SimplePurpleGauge](themes/SimplePurpleGauge/), [SimpleRedGauge](themes/SimpleRedGauge/), [SimpleYellowGauge](themes/SimpleYellowGauge/), [SimpleNeonGauge](themes/SimpleNeonGauge/), [SimpleRedGaugeRedBg](themes/SimpleRedGaugeRedBg/) | Gauge-style variants with GraphicBar meters |
 | [SimpleMulticolor](themes/SimpleMulticolor/) | Multi-color variant |
 | [Cyberpunk](themes/Cyberpunk/) | Cyberpunk-styled system monitor |
+| [bash-dark-green](themes/bash-dark-green/) | Hacker/terminal-style green-on-black with CPU, RAM, network, and disk gauges |
+| [bash-dark-green-gpu](themes/bash-dark-green-gpu/) | GPU variant of bash-dark-green adding GPU usage, VRAM, and temperature |
+
+**Landscape themes** — 480x320 landscape system monitors (Orientation 0):
+
+| Theme | Description |
+|-------|-------------|
+| [Cyberdeck](themes/Cyberdeck/) | Multi-gauge cyberdeck display with CPU, GPU, RAM, fan speeds, FPS sparkline, and network stats |
 
 **NAS themes** — 4-bay drive monitor layouts designed for NAS/server use:
 
