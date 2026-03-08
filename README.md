@@ -341,20 +341,21 @@ lcd4linux -F -c themes/SimpleWhite/dpf_simplewhite.conf
 
 | Theme | Description |
 |-------|-------------|
-| [SimpleWhite](themes/SimpleWhite/) | White-on-dark system monitor with CPU, RAM, disk, and network stats |
-| [SimpleBlue](themes/SimpleBlue/), [SimpleGreen](themes/SimpleGreen/), [SimpleRed](themes/SimpleRed/), [SimpleOrange](themes/SimpleOrange/), [SimplePurple](themes/SimplePurple/), [SimpleYellow](themes/SimpleYellow/), [SimpleNeon](themes/SimpleNeon/) | Color variants of the system monitor layout |
+| [SimpleWhite](themes/SimpleWhite/), [SimpleBlue](themes/SimpleBlue/), [SimpleGreen](themes/SimpleGreen/), [SimpleRed](themes/SimpleRed/), [SimpleOrange](themes/SimpleOrange/), [SimplePurple](themes/SimplePurple/), [SimpleYellow](themes/SimpleYellow/), [SimpleNeon](themes/SimpleNeon/) | System monitor with CPU, RAM, disk, and network stats in various color schemes |
 | [SimpleBlueFall](themes/SimpleBlueFall/), [SimpleGreenFall](themes/SimpleGreenFall/), [SimpleOrangeFall](themes/SimpleOrangeFall/), [SimplePurpleFall](themes/SimplePurpleFall/), [SimpleRedFall](themes/SimpleRedFall/), [SimpleYellowFall](themes/SimpleYellowFall/) | Alternate color variants |
-| [SimpleBlueGauge](themes/SimpleBlueGauge/), [SimpleGreenGauge](themes/SimpleGreenGauge/), [SimpleOrangeGauge](themes/SimpleOrangeGauge/), [SimplePurpleGauge](themes/SimplePurpleGauge/), [SimpleRedGauge](themes/SimpleRedGauge/), [SimpleYellowGauge](themes/SimpleYellowGauge/), [SimpleNeonGauge](themes/SimpleNeonGauge/), [SimpleRedGaugeRedBg](themes/SimpleRedGaugeRedBg/) | Gauge-style variants with GraphicBar meters |
+| [SimpleBlueGauge](themes/SimpleBlueGauge/), [SimpleGreenGauge](themes/SimpleGreenGauge/), [SimpleOrangeGauge](themes/SimpleOrangeGauge/), [SimplePurpleGauge](themes/SimplePurpleGauge/), [SimpleRedGauge](themes/SimpleRedGauge/), [SimpleYellowGauge](themes/SimpleYellowGauge/), [SimpleNeonGauge](themes/SimpleNeonGauge/), [SimpleRedGaugeRedBg](themes/SimpleRedGaugeRedBg/), [SimpleCyberpunkGauge](themes/SimpleCyberpunkGauge/) | Gauge-style variants with radial gauge meters |
 | [SimpleMulticolor](themes/SimpleMulticolor/) | Multi-color variant |
-| [Cyberpunk](themes/Cyberpunk/) | Cyberpunk-styled system monitor |
-| [bash-dark-green](themes/bash-dark-green/) | Hacker/terminal-style green-on-black with CPU, RAM, network, and disk gauges |
-| [bash-dark-green-gpu](themes/bash-dark-green-gpu/) | GPU variant of bash-dark-green adding GPU usage, VRAM, and temperature |
+| [Cyberpunk](themes/Cyberpunk/), [Cyberpunk-net](themes/Cyberpunk-net/) | Cyberpunk 2077-styled system monitor (net variant replaces disk with download/upload speeds) |
+| [bash-dark-green](themes/bash-dark-green/), [bash-dark-green-gpu](themes/bash-dark-green-gpu/) | Hacker/terminal-style green-on-black with CPU, RAM, network, and disk gauges (GPU variant adds GPU usage, VRAM, and temperature) |
 
 **Landscape themes** — 480x320 landscape system monitors (Orientation 0):
 
 | Theme | Description |
 |-------|-------------|
 | [Cyberdeck](themes/Cyberdeck/) | Multi-gauge cyberdeck display with CPU, GPU, RAM, fan speeds, FPS sparkline, and network stats |
+| [LandscapeEarth](themes/LandscapeEarth/) | Clean Earth-themed monitor with CPU, GPU, RAM bars and temperature |
+| [LandscapeModernDevice35](themes/LandscapeModernDevice35/) | Server dashboard with CPU sparkline, ETH/WiFi network sparklines, memory, disk, and uptime |
+| [LandscapeMagicBlue](themes/LandscapeMagicBlue/) | Sci-fi dashboard with 4 radial gauges (CPU, GPU, RAM, GPU RAM), network speeds, and disk usage |
 
 **NAS themes** — 4-bay drive monitor layouts designed for NAS/server use:
 
@@ -367,5 +368,5 @@ The NAS themes require editing the `Variables` section to match your drive confi
 
 ### Theme design credits
 
-Original theme designs by [@takattila](https://github.com/takattila) from [turing-smart-screen-python](https://github.com/mathoudebine/turing-smart-screen-python), adapted for lcd4linux. Licensed under GPL-3.0.
+Original theme designs from [turing-smart-screen-python](https://github.com/mathoudebine/turing-smart-screen-python), adapted for lcd4linux. Theme authors: [@takattila](https://github.com/takattila), [@mathoudebine](https://github.com/mathoudebine), [@napobear](https://github.com/napobear), [@amiltonjr](https://github.com/amiltonjr). Licensed under GPL-3.0.
 
