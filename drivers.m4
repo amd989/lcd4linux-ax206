@@ -301,6 +301,43 @@ done
 
 AC_MSG_RESULT([done])
 
+# Disable Linux-only drivers on FreeBSD
+# These require linux/*.h headers, libusb-0.1, asm/io.h, or parport
+if test "$is_freebsd" = "true"; then
+   ASTUSB="no"
+   BWCT="no"
+   D4D="no"
+   FUTABAVFD="no"
+   G15="no"
+   GLCD2USB="no"
+   HD44780="no"
+   HD44780_I2C="no"
+   IRLCD="no"
+   LCD2USB="no"
+   LCDLINUX="no"
+   LEDMATRIX="no"
+   LPH7508="no"
+   LUISE="no"
+   M50530="no"
+   MATRIXORBITALGX="no"
+   MDM166A="no"
+   NORITAKE="no"
+   PICOLCD="no"
+   PICOLCDGRAPHIC="no"
+   ROUTERBOARD="no"
+   SAMPLE="no"
+   SAMSUNGSPF="no"
+   SHUTTLEVFD="no"
+   ST2205="no"
+   T6963="no"
+   TEW673GRU="no"
+   Trefon="no"
+   ULA200="no"
+   USBHUB="no"
+   USBLCD="no"
+   VUPLUS4K="no"
+   ILI9486_FB="no"
+fi
 
 # generic display drivers
 TEXT="no"

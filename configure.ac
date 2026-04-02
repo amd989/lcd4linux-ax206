@@ -33,6 +33,14 @@ AC_CONFIG_SRCDIR([lcd4linux.c])
 AM_INIT_AUTOMAKE
 AM_CONFIG_HEADER(config.h)
 
+# Platform detection
+AC_CANONICAL_HOST
+case "$host_os" in
+  freebsd*) is_freebsd="true"  ;;
+  linux*)   is_freebsd="false" ;;
+  *)        is_freebsd="false" ;;
+esac
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
@@ -77,6 +85,9 @@ AC_CHECK_HEADERS(usb.h, [has_usb="true"], [has_usb="false"])
 
 # check for libusb-1.0/libusb.h
 AC_CHECK_HEADERS(libusb-1.0/libusb.h, [has_usb10="true"], [has_usb10="false"])
+
+# check for sys/sysctl.h (FreeBSD system info)
+AC_CHECK_HEADERS([sys/sysctl.h], [has_sysctl="true"], [has_sysctl="false"])
 
 # check for luise.h
 AC_CHECK_HEADERS(luise.h, [has_luise="true"], [has_luise="false"])
@@ -145,9 +156,8 @@ AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK
 
-# uClibc has no getloadavg()
-# AC_FUNC_GETLOADAVG sounds promising, but does not really work
-#AC_FUNC_GETLOADAVG
+# uClibc has no getloadavg(), but FreeBSD does
+AC_CHECK_FUNCS([getloadavg])
 
 AC_PROG_GCC_TRADITIONAL
 
@@ -161,6 +171,14 @@ AC_FUNC_STAT
 AC_FUNC_STRFTIME
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([dup2 floor gethostbyname gettimeofday memmove memset pow putenv regcomp select socket sqrt strcasecmp strchr strcspn strdup strerror strncasecmp strndup strpbrk strrchr strstr strtol strtoul uname])
+
+# Check if union semun is defined (glibc doesn't define it, FreeBSD does)
+AC_CHECK_MEMBER([union semun.val],
+  [AC_DEFINE(HAVE_UNION_SEMUN, 1, [Define if union semun is defined in sys/sem.h])],
+  [],
+  [#include <sys/types.h>
+   #include <sys/ipc.h>
+   #include <sys/sem.h>])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

@@ -82,16 +82,6 @@ int thread_argc;
 char **thread_argv;
 
 
-/* glibc 2.1 requires defining semun ourselves */
-#ifdef _SEM_SEMUN_UNDEFINED
-union semun {
-    int val;
-    struct semid_ds *buf;
-    unsigned short int *array;
-    struct seminfo *__buf;
-};
-#endif
-
 
 int mutex_create(void)
 {
