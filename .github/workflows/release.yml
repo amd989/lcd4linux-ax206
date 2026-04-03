@@ -97,8 +97,8 @@ jobs:
                 libX11-devel libXext-devel libXpm-devel \
                 rpm-build git systemd-rpm-macros gettext-devel
               VERSION='"${{ steps.version.outputs.version }}"'
-              # RPM Version field forbids "-"; replace with "~" (sorts lower, correct for pre-releases)
-              RPM_VERSION="${VERSION//-/~}"
+              # RPM Version field forbids "-"; replace with "." (sorts lower, correct for pre-releases)
+              RPM_VERSION=$(echo "$VERSION" | tr - .)
               # Create source tarball
               mkdir -p /root/rpmbuild/{SOURCES,SPECS}
               tar czf /root/rpmbuild/SOURCES/lcd4linux-ax206-${RPM_VERSION}.tar.gz \
