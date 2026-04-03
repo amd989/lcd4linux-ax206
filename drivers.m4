@@ -1021,9 +1021,13 @@ if test "$LIBUSB" = "yes"; then
    DRVLIBS="$DRVLIBS -lusb"
 fi
 
-# libusb-1.0
+# libusb-1.0 (FreeBSD: libusb in base, linked as -lusb)
 if test "$LIBUSB10" = "yes"; then
-   DRVLIBS="$DRVLIBS -lusb-1.0"
+   if test "$is_freebsd" = "true"; then
+      DRVLIBS="$DRVLIBS -lusb"
+   else
+      DRVLIBS="$DRVLIBS -lusb-1.0"
+   fi
 fi
 
 # libftdi
