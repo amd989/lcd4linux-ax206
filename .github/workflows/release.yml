@@ -97,13 +97,15 @@ jobs:
                 libX11-devel libXext-devel libXpm-devel \
                 rpm-build git systemd-rpm-macros gettext-devel
               VERSION='"${{ steps.version.outputs.version }}"'
+              # RPM Version field forbids "-"; replace with "~" (sorts lower, correct for pre-releases)
+              RPM_VERSION="${VERSION//-/~}"
               # Create source tarball
               mkdir -p /root/rpmbuild/{SOURCES,SPECS}
-              tar czf /root/rpmbuild/SOURCES/lcd4linux-ax206-${VERSION}.tar.gz \
-                --transform "s,^\.,lcd4linux-ax206-${VERSION}," \
+              tar czf /root/rpmbuild/SOURCES/lcd4linux-ax206-${RPM_VERSION}.tar.gz \
+                --transform "s,^\.,lcd4linux-ax206-${RPM_VERSION}," \
                 --exclude=.git .
               cp rpm/lcd4linux-ax206.spec /root/rpmbuild/SPECS/
-              rpmbuild -bb --define "_version ${VERSION}" /root/rpmbuild/SPECS/lcd4linux-ax206.spec
+              rpmbuild -bb --define "_version ${RPM_VERSION}" /root/rpmbuild/SPECS/lcd4linux-ax206.spec
               mkdir -p /build/output
               cp /root/rpmbuild/RPMS/*/*.rpm /build/output/
             '
@@ -131,9 +133,11 @@ jobs:
             packages/*.deb
             packages/*.rpm
           generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
 
   publish-repos:
     needs: [build, build-rpm]
+    if: ${{ !contains(github.ref_name, '-') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
