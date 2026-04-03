@@ -10,29 +10,24 @@ STAGING="$(mktemp -d)"
 
 trap 'rm -rf "$STAGING"' EXIT
 
-# Stage files into pkg layout
-mkdir -p "$STAGING/usr/local/bin"
-mkdir -p "$STAGING/usr/local/etc/rc.d"
-mkdir -p "$STAGING/usr/local/etc/lcd4linux/examples"
-mkdir -p "$STAGING/usr/local/share/lcd4linux"
+# Stage files into pkg layout (paths are relative to prefix /usr/local)
+mkdir -p "$STAGING/bin"
+mkdir -p "$STAGING/etc/rc.d"
+mkdir -p "$STAGING/etc/lcd4linux/examples"
 
 # Binary
-cp "$ROOT_DIR/lcd4linux" "$STAGING/usr/local/bin/lcd4linux"
-chmod 755 "$STAGING/usr/local/bin/lcd4linux"
+cp "$ROOT_DIR/lcd4linux" "$STAGING/bin/lcd4linux"
+chmod 755 "$STAGING/bin/lcd4linux"
 
 # rc.d service script
-cp "$PKG_DIR/rc.d/lcd4linux" "$STAGING/usr/local/etc/rc.d/lcd4linux"
-chmod 755 "$STAGING/usr/local/etc/rc.d/lcd4linux"
+cp "$PKG_DIR/rc.d/lcd4linux" "$STAGING/etc/rc.d/lcd4linux"
+chmod 755 "$STAGING/etc/rc.d/lcd4linux"
 
 # Config examples
-cp "$ROOT_DIR/dpf_320x240.conf" "$STAGING/usr/local/etc/lcd4linux/examples/dpf_320x240.conf"
+cp "$ROOT_DIR/dpf_320x240.conf" "$STAGING/etc/lcd4linux/examples/dpf_320x240.conf"
 if [ -f "$ROOT_DIR/lcd4linux.conf.sample" ]; then
-    cp "$ROOT_DIR/lcd4linux.conf.sample" "$STAGING/usr/local/etc/lcd4linux/examples/lcd4linux.conf.sample"
+    cp "$ROOT_DIR/lcd4linux.conf.sample" "$STAGING/etc/lcd4linux/examples/lcd4linux.conf.sample"
 fi
-
-# Themes and fonts
-cp -r "$ROOT_DIR/themes" "$STAGING/usr/local/share/lcd4linux/themes"
-cp -r "$ROOT_DIR/fonts" "$STAGING/usr/local/share/lcd4linux/fonts"
 
 # Generate plist (file manifest)
 PLIST="$(mktemp)"
