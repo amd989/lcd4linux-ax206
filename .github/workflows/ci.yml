@@ -96,11 +96,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install dependencies
-        run: |
-          sudo pkg install -y autoconf automake libtool pkgconf gettext-tools \
-            libgd libvncserver xorg-libraries
-
       - name: Build lcd4linux
         run: |
           ./bootstrap

@@ -124,11 +124,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install dependencies
-        run: |
-          sudo pkg install -y autoconf automake libtool pkgconf gettext-tools \
-            libgd libvncserver xorg-libraries
-
       - name: Extract version from tag
         id: version
         run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
