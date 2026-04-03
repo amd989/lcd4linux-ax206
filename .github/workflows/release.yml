@@ -116,8 +116,57 @@ jobs:
           name: rpm-${{ matrix.arch }}
           path: output/*.rpm
 
+  build-freebsd:
+    runs-on: [self-hosted, freebsd]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build lcd4linux
+        run: |
+          ./bootstrap
+          ./configure --with-drivers=DPF,VNC,X11
+          make clean
+          make
+          ./lcd4linux -l
+
+      - name: Build FreeBSD .pkg
+        run: |
+          chmod +x pkg/freebsd/build-pkg.sh
+          sh pkg/freebsd/build-pkg.sh "${{ steps.version.outputs.version }}"
+
+      - name: Upload pkg
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkg-freebsd-amd64
+          path: dist/*.pkg
+
+      - name: Build FreeBSD pkg repo
+        run: |
+          mkdir -p repo/freebsd
+          cp dist/*.pkg repo/freebsd/
+          pkg repo repo/freebsd/
+
+      - name: Upload pkg repo
+        uses: actions/upload-artifact@v4
+        with:
+          name: pkg-repo-freebsd
+          path: repo/freebsd/
+
+      - name: Clean up
+        if: always()
+        run: |
+          make distclean 2>/dev/null || true
+          rm -rf dist repo
+
   release:
-    needs: [build, build-rpm]
+    needs: [build, build-rpm, build-freebsd]
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
@@ -132,11 +181,12 @@ jobs:
           files: |
             packages/*.deb
             packages/*.rpm
+            packages/*.pkg
           generate_release_notes: true
           prerelease: ${{ contains(github.ref_name, '-') }}
 
   publish-repos:
-    needs: [build, build-rpm]
+    needs: [build, build-rpm, build-freebsd]
     if: ${{ !contains(github.ref_name, '-') }}
     runs-on: ubuntu-latest
     steps:
@@ -166,6 +216,13 @@ jobs:
         with:
           pattern: rpm-*
           path: incoming-rpm
+          merge-multiple: true
+
+      - name: Download FreeBSD pkg repo
+        uses: actions/download-artifact@v4
+        with:
+          pattern: pkg-repo-freebsd
+          path: incoming-pkg
           merge-multiple: true
 
       - name: Install repo tools
@@ -301,14 +358,38 @@ jobs:
           SETUPEOF
           chmod +x setup-rpm.sh
 
+      - name: Stage FreeBSD pkg repo
+        run: |
+          mkdir -p freebsd
+          cp incoming-pkg/* freebsd/ 2>/dev/null || true
+
+      - name: Create FreeBSD pkg setup script
+        run: |
+          cat > setup-pkg.sh <<'EOF'
+          #!/bin/sh
+          set -e
+          echo "Adding lcd4linux-ax206 FreeBSD pkg repository..."
+          mkdir -p /usr/local/etc/pkg/repos
+          cat > /usr/local/etc/pkg/repos/lcd4linux-ax206.conf <<REPOEOF
+          lcd4linux-ax206: {
+            url: "https://amd989.github.io/lcd4linux-ax206/freebsd",
+            enabled: yes,
+            signature_type: "none"
+          }
+          REPOEOF
+          pkg update
+          echo "Done! Run: pkg install lcd4linux-ax206"
+          EOF
+          chmod +x setup-pkg.sh
+
       - name: Deploy to GitHub Pages
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # Clean up build artifacts, keep repo files
-          rm -rf incoming-deb incoming-rpm conf
+          rm -rf incoming-deb incoming-rpm incoming-pkg conf
           git add -A
-          git commit -m "Update APT repo for ${GITHUB_REF_NAME}" || true
+          git commit -m "Update repos for ${GITHUB_REF_NAME}" || true
           git push origin gh-pages --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

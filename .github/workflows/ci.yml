@@ -87,3 +87,24 @@ jobs:
               echo "=== .rpm build successful ==="
               rpm -qip /root/rpmbuild/RPMS/*/*.rpm
             '
+
+  build-freebsd:
+    runs-on: [self-hosted, freebsd]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build lcd4linux
+        run: |
+          ./bootstrap
+          ./configure --with-drivers=DPF,VNC,X11
+          make clean
+          make
+          ./lcd4linux -l
+          echo "=== FreeBSD build successful ==="
+
+      - name: Clean up
+        if: always()
+        run: make distclean 2>/dev/null || true
