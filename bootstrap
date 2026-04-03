@@ -10,6 +10,9 @@ set -e
 PS4="$0:\$LINENO> "
 set -x
 
+# automake requires ChangeLog — point to CHANGELOG.md if it exists
+[ ! -f ChangeLog ] && [ -f CHANGELOG.md ] && ln -s CHANGELOG.md ChangeLog
+
 aclocal
 libtoolize --copy --force 
 autoheader
