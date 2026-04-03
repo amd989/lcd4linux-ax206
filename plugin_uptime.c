@@ -5,6 +5,7 @@
  *
  * Copyright (C) 2003 Michael Reinelt <michael@reinelt.co.at>
  * Copyright (C) 2004 The LCD4Linux Team <lcd4linux-devel@users.sourceforge.net>
+ * Copyright (C) 2025-2026 Alejandro Mora <amd989@users.noreply.github.com>
  *
  * This file is part of LCD4Linux.
  *
@@ -45,10 +46,16 @@
 #include <sys/time.h>
 #include <fcntl.h>
 
+#ifdef __FreeBSD__
+#include <sys/sysctl.h>
+#endif
+
 #include "debug.h"
 #include "plugin.h"
 
+#ifndef __FreeBSD__
 static int fd = -2;
+#endif
 
 
 static char *itoa(char *buffer, const size_t size, unsigned int value)
@@ -165,6 +172,17 @@ char *struptime(const unsigned int uptime, const char *format)
 
 double getuptime(void)
 {
+#ifdef __FreeBSD__
+    struct timeval boottime, now;
+    size_t len = sizeof(boottime);
+    int mib[2] = { CTL_KERN, KERN_BOOTTIME };
+
+    if (sysctl(mib, 2, &boottime, &len, NULL, 0) < 0)
+        return -1;
+
+    gettimeofday(&now, NULL);
+    return (double)(now.tv_sec - boottime.tv_sec) + (double)(now.tv_usec - boottime.tv_usec) / 1000000.0;
+#else
     char buffer[36];
     int i;
 
@@ -183,6 +201,7 @@ double getuptime(void)
 
     /* ignore the 2nd value from /proc/uptime */
     return strtod(buffer, NULL);
+#endif
 }
 
 
@@ -203,7 +222,7 @@ static void my_uptime(RESULT * result, const int argc, RESULT * argv[])
 
     age = (now.tv_sec - last_value.tv_sec) * 1000 + (now.tv_usec - last_value.tv_usec) / 1000;
     /* reread every 100 msec only */
-    if (fd == -2 || age == 0 || age > 100) {
+    if (uptime == 0.0 || age == 0 || age > 100) {
         uptime = getuptime();
         if (uptime < 0.0) {
             error("parse(/proc/uptime) failed!");
@@ -232,7 +251,9 @@ int plugin_init_uptime(void)
 
 void plugin_exit_uptime(void)
 {
+#ifndef __FreeBSD__
     if (fd > 0)
         close(fd);
     fd = -2;
+#endif
 }

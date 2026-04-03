@@ -1,0 +1,13 @@
+#!/bin/sh
+if [ ! -f /usr/local/etc/lcd4linux/lcd4linux.conf ]; then
+    cp /usr/local/etc/lcd4linux/examples/dpf_320x240.conf /usr/local/etc/lcd4linux/lcd4linux.conf
+    echo "Created /usr/local/etc/lcd4linux/lcd4linux.conf from default — edit before starting!"
+fi
+echo "Enabling lcd4linux service..."
+sysrc lcd4linux_enable=YES 2>/dev/null || true
+echo ""
+echo "=== lcd4linux-ax206 installed ==="
+echo "  Config:  /usr/local/etc/lcd4linux/lcd4linux.conf"
+echo "  Themes:  /usr/local/share/lcd4linux/themes/"
+echo "  Start:   service lcd4linux start"
+echo "  Status:  service lcd4linux status"

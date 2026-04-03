@@ -270,6 +270,13 @@ for plugin in $plugins; do
    esac
 done
 
+# Disable Linux-only plugins on FreeBSD
+if test "$is_freebsd" = "true"; then
+   PLUGIN_HUAWEI="no"
+   PLUGIN_WIRELESS="no"
+   PLUGIN_NETINFO="no"
+fi
+
 AC_MSG_RESULT([done])
 
 # Advanced Power Management
@@ -405,14 +412,30 @@ fi
 
 # IConv
 if test "$PLUGIN_ICONV" = "yes"; then
-   AM_ICONV
-   if test "$am_cv_func_iconv" = "yes"; then 
-      PLUGINS="$PLUGINS plugin_iconv.o"
-      PLUGINLIBS="$PLUGINLIBS $LIBICONV"
-      AC_DEFINE(PLUGIN_ICONV,1,[iconv charset converter plugin])
-   else
-      AC_MSG_WARN(iconv not found: iconv plugin disabled)
-   fi
+   m4_ifdef([AM_ICONV], [
+      AM_ICONV
+      if test "$am_cv_func_iconv" = "yes"; then
+         PLUGINS="$PLUGINS plugin_iconv.o"
+         PLUGINLIBS="$PLUGINLIBS $LIBICONV"
+         AC_DEFINE(PLUGIN_ICONV,1,[iconv charset converter plugin])
+      else
+         AC_MSG_WARN(iconv not found: iconv plugin disabled)
+      fi
+   ], [
+      dnl AM_ICONV macro not available — check for iconv directly
+      AC_CHECK_FUNC(iconv, [
+         PLUGINS="$PLUGINS plugin_iconv.o"
+         AC_DEFINE(PLUGIN_ICONV,1,[iconv charset converter plugin])
+      ], [
+         AC_CHECK_LIB(iconv, iconv, [
+            PLUGINS="$PLUGINS plugin_iconv.o"
+            PLUGINLIBS="$PLUGINLIBS -liconv"
+            AC_DEFINE(PLUGIN_ICONV,1,[iconv charset converter plugin])
+         ], [
+            AC_MSG_WARN(iconv not found: iconv plugin disabled)
+         ])
+      ])
+   ])
 fi
 
 # ISDN monitor
@@ -597,8 +620,15 @@ if test "$PLUGIN_STATFS" = "yes"; then
        PLUGINS="$PLUGINS plugin_statfs.o"
        AC_DEFINE(PLUGIN_STATFS,1,[statfs plugin])
    else
-      AC_MSG_WARN(sys/vfs.h header not found: statfs plugin disabled)
-   fi 
+      dnl FreeBSD: statfs is in sys/mount.h
+      AC_CHECK_HEADERS(sys/mount.h, [has_mount_header="true"], [has_mount_header="false"])
+      if test "$has_mount_header" = "true"; then
+          PLUGINS="$PLUGINS plugin_statfs.o"
+          AC_DEFINE(PLUGIN_STATFS,1,[statfs plugin])
+      else
+          AC_MSG_WARN(sys/vfs.h and sys/mount.h not found: statfs plugin disabled)
+      fi
+   fi
 fi
 
 # uname

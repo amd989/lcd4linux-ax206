@@ -5,6 +5,7 @@
  *
  * Copyright (C) 1999, 2000 Michael Reinelt <michael@reinelt.co.at>
  * Copyright (C) 2004 The LCD4Linux Team <lcd4linux-devel@users.sourceforge.net>
+ * Copyright (C) 2025-2026 Alejandro Mora <amd989@users.noreply.github.com>
  *
  * This file is part of LCD4Linux.
  *
@@ -58,7 +59,9 @@
 #include <fcntl.h>
 #include <time.h>
 #include <signal.h>
+#ifdef __linux__
 #include <linux/serial.h>
+#endif
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -211,7 +214,6 @@ int drv_generic_serial_open_handshake(const char *section, const char *driver, c
 {
     int fd;
     struct termios portset;
-    struct serial_struct serinfo;
     fd = drv_generic_serial_open(section, driver, flags);       /* Open the Port with the original function */
 
     /* We activate the Usage of the Handshake Pins */
@@ -219,11 +221,16 @@ int drv_generic_serial_open_handshake(const char *section, const char *driver, c
     portset.c_cflag |= CRTSCTS; /* Set Handshake */
     tcsetattr(fd, TCSANOW, &portset);   /* Set Port Attrributes */
 
+#ifdef __linux__
     /* This sets the UART-Type to the simplest one: 8250. No Fifos or other Features */
     /* Fifo destroys Handshake so needs to be disabled */
-    ioctl(fd, TIOCGSERIAL, &serinfo);   /* Get Serial Info */
-    serinfo.type = PORT_8250;   /* Set to super-simple Port Type */
-    ioctl(fd, TIOCSSERIAL, &serinfo);   /* Write Back modified Info */
+    {
+        struct serial_struct serinfo;
+        ioctl(fd, TIOCGSERIAL, &serinfo);   /* Get Serial Info */
+        serinfo.type = PORT_8250;   /* Set to super-simple Port Type */
+        ioctl(fd, TIOCSSERIAL, &serinfo);   /* Write Back modified Info */
+    }
+#endif
     return fd;
 }
 

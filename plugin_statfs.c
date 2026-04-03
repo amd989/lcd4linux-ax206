@@ -5,6 +5,7 @@
  *
  * Copyright (C) 2005 Michael Reinelt <michael@reinelt.co.at>
  * Copyright (C) 2005 The LCD4Linux Team <lcd4linux-devel@users.sourceforge.net>
+ * Copyright (C) 2025-2026 Alejandro Mora <amd989@users.noreply.github.com>
  *
  * This file is part of LCD4Linux.
  *
@@ -38,7 +39,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#ifdef HAVE_SYS_VFS_H
 #include <sys/vfs.h>
+#else
+#include <sys/param.h>
+#include <sys/mount.h>
+#endif
 
 #include "debug.h"
 #include "plugin.h"
@@ -79,7 +85,11 @@ static void my_statfs(RESULT * result, RESULT * arg1, RESULT * arg2)
         value = buf.f_fsid;
 #endif
     } else if (strcasecmp(key, "namelen") == 0) {
+#ifdef __FreeBSD__
+        value = buf.f_namemax;
+#else
         value = buf.f_namelen;
+#endif
     } else {
         error("statfs: unknown field '%s'", key);
         value = -1;

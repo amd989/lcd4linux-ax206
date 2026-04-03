@@ -1,0 +1,18 @@
+name: lcd4linux-ax206
+version: "${VERSION}"
+origin: sysutils/lcd4linux-ax206
+comment: LCD4Linux display driver for AX206 USB displays
+maintainer: amd989@users.noreply.github.com
+www: https://github.com/amd989/lcd4linux-ax206
+prefix: /usr/local
+desc: <<EOD
+LCD4Linux driver for AX206 chipset USB LCD displays (3.5" AIDA64 USB displays).
+Supports DPF, VNC, and X11 display drivers with 35+ pre-built system monitor themes.
+Features Gauge, Sparkline, GraphicBar, and TrueType widgets.
+EOD
+categories: [sysutils]
+licenselogic: single
+licenses: [GPLv2]
+deps: {
+  libgd: { origin: graphics/gd, version: "2" }
+}

@@ -5,6 +5,7 @@
  *
  * Copyright (C) 2003 Michael Reinelt <michael@reinelt.co.at>
  * Copyright (C) 2004 The LCD4Linux Team <lcd4linux-devel@users.sourceforge.net>
+ * Copyright (C) 2025-2026 Alejandro Mora <amd989@users.noreply.github.com>
  *
  * This file is part of LCD4Linux.
  *
@@ -44,6 +45,12 @@
 #ifdef __MAC_OS_X_VERSION_10_3
 #include <mach/mach_host.h>
 #include <mach/host_info.h>
+#endif
+
+#ifdef __FreeBSD__
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#include <sys/resource.h>
 #endif
 
 #include "debug.h"
@@ -89,7 +96,61 @@ static int parse_proc_stat(void)
     if (age > 0 && age <= 10)
         return 0;
 
-#ifndef __MAC_OS_X_VERSION_10_3
+#if defined(__FreeBSD__)
+
+    /* FreeBSD kernel, sysctl interface */
+    {
+        long cp_time[CPUSTATES];
+        size_t len = sizeof(cp_time);
+        char s_val[16];
+
+        if (sysctlbyname("kern.cp_time", &cp_time, &len, NULL, 0) < 0) {
+            error("sysctl(kern.cp_time) failed: %s", strerror(errno));
+            return -1;
+        }
+
+        snprintf(s_val, sizeof(s_val), "%ld", cp_time[CP_USER]);
+        hash_put2("cpu", "user", s_val);
+        snprintf(s_val, sizeof(s_val), "%ld", cp_time[CP_NICE]);
+        hash_put2("cpu", "nice", s_val);
+        snprintf(s_val, sizeof(s_val), "%ld", cp_time[CP_SYS]);
+        hash_put2("cpu", "system", s_val);
+        snprintf(s_val, sizeof(s_val), "%ld", cp_time[CP_IDLE]);
+        hash_put2("cpu", "idle", s_val);
+        snprintf(s_val, sizeof(s_val), "%ld", cp_time[CP_INTR]);
+        hash_put2("cpu", "irq", s_val);
+        /* No iowait or softirq on FreeBSD */
+        hash_put2("cpu", "iow", "0");
+        hash_put2("cpu", "sirq", "0");
+    }
+
+#elif defined(__MAC_OS_X_VERSION_10_3)
+
+    /* MACH Kernel, MacOS X */
+
+    kern_return_t err;
+    mach_msg_type_number_t count;
+    host_info_t r_load;
+    host_cpu_load_info_data_t cpu_load;
+    char s_val[8];
+
+    r_load = &cpu_load;
+    count = HOST_CPU_LOAD_INFO_COUNT;
+    err = host_statistics(mach_host_self(), HOST_CPU_LOAD_INFO, r_load, &count);
+    if (KERN_SUCCESS != err) {
+        error("Error getting cpu load");
+        return -1;
+    }
+    snprintf(s_val, sizeof(s_val), "%d", cpu_load.cpu_ticks[CPU_STATE_USER]);
+    hash_put2("cpu", "user", s_val);
+    snprintf(s_val, sizeof(s_val), "%d", cpu_load.cpu_ticks[CPU_STATE_NICE]);
+    hash_put2("cpu", "nice", s_val);
+    snprintf(s_val, sizeof(s_val), "%d", cpu_load.cpu_ticks[CPU_STATE_SYSTEM]);
+    hash_put2("cpu", "system", s_val);
+    snprintf(s_val, sizeof(s_val), "%d", cpu_load.cpu_ticks[CPU_STATE_IDLE]);
+    hash_put2("cpu", "idle", s_val);
+
+#else
 
     /* Linux Kernel, /proc-filesystem */
 
@@ -223,32 +284,6 @@ static int parse_proc_stat(void)
             hash_put1(buffer, beg);
         }
     }
-
-#else
-
-    /* MACH Kernel, MacOS X */
-
-    kern_return_t err;
-    mach_msg_type_number_t count;
-    host_info_t r_load;
-    host_cpu_load_info_data_t cpu_load;
-    char s_val[8];
-
-    r_load = &cpu_load;
-    count = HOST_CPU_LOAD_INFO_COUNT;
-    err = host_statistics(mach_host_self(), HOST_CPU_LOAD_INFO, r_load, &count);
-    if (KERN_SUCCESS != err) {
-        error("Error getting cpu load");
-        return -1;
-    }
-    snprintf(s_val, sizeof(s_val), "%d", cpu_load.cpu_ticks[CPU_STATE_USER]);
-    hash_put2("cpu", "user", s_val);
-    snprintf(s_val, sizeof(s_val), "%d", cpu_load.cpu_ticks[CPU_STATE_NICE]);
-    hash_put2("cpu", "nice", s_val);
-    snprintf(s_val, sizeof(s_val), "%d", cpu_load.cpu_ticks[CPU_STATE_SYSTEM]);
-    hash_put2("cpu", "system", s_val);
-    snprintf(s_val, sizeof(s_val), "%d", cpu_load.cpu_ticks[CPU_STATE_IDLE]);
-    hash_put2("cpu", "idle", s_val);
 
 #endif
 

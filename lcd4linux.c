@@ -62,7 +62,8 @@
 
 static char *release = "LCD4Linux " VERSION " built " __DATE__ " " __TIME__;
 static char *copyright =
-    "Copyright (C) 2005, 2006, 2007, 2008, 2009 The LCD4Linux Team <lcd4linux-devel@users.sourceforge.net>";
+    "Copyright (C) 2005-2009 The LCD4Linux Team <lcd4linux-devel@users.sourceforge.net>\n"
+    "lcd4linux-ax206 fork maintained by Alejandro Mora <amd989@users.noreply.github.com>";
 static char **my_argv;
 extern char *output;
 

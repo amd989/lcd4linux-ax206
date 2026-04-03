@@ -1,6 +1,6 @@
 # LCD4Linux for AX206 USB Displays  [![CI Build Test](https://github.com/amd989/lcd4linux-ax206/actions/workflows/ci.yml/badge.svg)](https://github.com/amd989/lcd4linux-ax206/actions/workflows/ci.yml)
 
-This is a fork of [ukoda's lcd4linux-ax206](https://github.com/ukoda/lcd4linux-ax206), which itself is a fork of [MaxWiesel's lcd4linux-max](https://github.com/MaxWiesel/lcd4linux-max), focused on making AX206 USB LCD displays (commonly sold as "AIDA64 3.5" USB displays") easy to set up on modern Linux systems including Rocky/RHEL, Ubuntu/Mint, and Raspberry Pi.
+This is a fork of [ukoda's lcd4linux-ax206](https://github.com/ukoda/lcd4linux-ax206), which itself is a fork of [MaxWiesel's lcd4linux-max](https://github.com/MaxWiesel/lcd4linux-max), focused on making AX206 USB LCD displays (commonly sold as "AIDA64 3.5" USB displays") easy to set up on modern Linux and FreeBSD systems including Rocky/RHEL, Ubuntu/Mint, Raspberry Pi, and FreeBSD.
 
 The 3.5" AX206 USB displays are cheap and widely available, but most of the software ecosystem around them targets Windows (AIDA64) or uses Turing Smart Screen protocols that these displays aren't compatible with. LCD4Linux supports them natively on Linux, but getting a good-looking setup has historically required writing config files from scratch with little visual guidance.
 
@@ -19,8 +19,8 @@ The best source for general LCD4Linux information is [The unofficial LCD4Linux W
 - TrueType font rendering with background color support
 - `precision()` function for formatted numeric display
 - MySQL/MariaDB reconnect fix
-- (NEW✨) APT and DNF package repositories — install with `apt install` or `dnf install`, with automatic updates
-- (NEW✨) Pre-built packages for amd64, arm64, and armhf (including Raspberry Pi)
+- (NEW✨) APT, DNF, and FreeBSD pkg repositories — install with `apt install`, `dnf install`, or `pkg install`
+- (NEW✨) Pre-built packages for amd64, arm64, and armhf (including Raspberry Pi) and FreeBSD amd64
 - (NEW✨) Pre-built themes for system monitoring and NAS displays
 - (NEW✨) Sparkline widget for line graph history (e.g. temperature, I/O over time)
 - (NEW✨) Gauge widget for circular arc gauges (CPU, RAM, disk usage rings)
@@ -31,7 +31,7 @@ Be aware that AIDA64 is actually Windows software, not the displays themselves. 
 
 ## Installation
 
-Pre-built packages are available for Debian/Ubuntu and Rocky/RHEL/Fedora systems. Packages are built automatically by CI for amd64, arm64, and armhf (Debian) or x86_64 and aarch64 (RPM) architectures, so manual cross-compilation is not needed.
+Pre-built packages are available for Debian/Ubuntu, Rocky/RHEL/Fedora, and FreeBSD systems. Packages are built automatically by CI for amd64, arm64, and armhf (Debian), x86_64 and aarch64 (RPM), and amd64 (FreeBSD pkg) architectures, so manual cross-compilation is not needed.
 
 ### Debian / Ubuntu / Raspberry Pi OS (APT)
 
@@ -60,21 +60,46 @@ sudo curl -fsSL https://amd989.github.io/lcd4linux-ax206/setup-rpm.sh | sudo bas
 sudo dnf install lcd4linux-ax206
 ```
 
+### FreeBSD (pkg)
+
+```bash
+# Add the repository
+curl -fsSL https://amd989.github.io/lcd4linux-ax206/setup-pkg.sh | sudo sh
+
+# Install
+sudo pkg install lcd4linux-ax206
+```
+
 ### What gets installed
 
+**Linux:**
 - `/usr/bin/lcd4linux` — the binary
 - `/etc/lcd4linux/lcd4linux.conf` — default configuration (320x240 DPF layout)
 - `/etc/lcd4linux/examples/` — additional example configs
 - `lcd4linux-ax206.service` — systemd service unit
 
+**FreeBSD:**
+- `/usr/local/bin/lcd4linux` — the binary
+- `/usr/local/etc/lcd4linux/lcd4linux.conf` — default configuration
+- `/usr/local/etc/lcd4linux/examples/` — additional example configs
+- `/usr/local/share/lcd4linux/themes/` — pre-built themes
+- `/usr/local/etc/rc.d/lcd4linux` — rc.d service script
+
 ### Starting the service
 
+**Linux:**
 ```bash
 sudo systemctl start lcd4linux-ax206
 sudo systemctl enable lcd4linux-ax206    # start on boot
 ```
 
-The service reads from `/etc/lcd4linux/lcd4linux.conf`. Edit this file to match your display and desired layout.
+**FreeBSD:**
+```bash
+sudo sysrc lcd4linux_enable=YES
+sudo service lcd4linux start
+```
+
+The service reads from `/etc/lcd4linux/lcd4linux.conf` (Linux) or `/usr/local/etc/lcd4linux/lcd4linux.conf` (FreeBSD). Edit this file to match your display and desired layout.
 
 ## Building from source
 
@@ -95,6 +120,13 @@ sudo dnf config-manager --set-enabled crb    # or powertools on older versions
 sudo dnf install gcc make autoconf automake libtool pkgconfig \
     libusbx-devel gd-devel libvncserver-devel \
     libX11-devel libXext-devel libXpm-devel gettext-devel
+```
+
+**FreeBSD:**
+```bash
+# libusb is part of FreeBSD base — no package needed
+sudo pkg install autoconf automake libtool pkgconf gettext-tools \
+    libgd libvncserver xorg-libraries
 ```
 
 ### Build
@@ -365,6 +397,14 @@ lcd4linux -F -c themes/SimpleWhite/dpf_simplewhite.conf
 | [SimpleWhiteNasIO](themes/SimpleWhiteNasIO/) | 4-bay NAS monitor showing drive usage %, temperature, size, and disk I/O throughput sparkline with M/s overlay per drive. Uses `/sys/block/*/stat` for I/O delta calculation. |
 
 The NAS themes require editing the `Variables` section to match your drive configuration (partition paths, block device names, display labels). Both support VNC mirroring out of the box — just install `libvncserver` and build with `--with-drivers=DPF,VNC`.
+
+**FreeBSD themes:**
+
+| Theme | Description |
+|-------|-------------|
+| [SimpleWhite-FreeBSD](themes/SimpleWhite-FreeBSD/) | FreeBSD-adapted SimpleWhite with `sysctl`-based commands replacing Linux `/sys/` and `/proc/` paths |
+
+The standard Linux themes use `exec()` calls that read from `/sys/class/thermal/`, `/proc/cpuinfo`, etc. These paths don't exist on FreeBSD. The FreeBSD theme variant uses `sysctl -n` commands instead (e.g. `sysctl -n dev.cpu.0.temperature`). The `cpuinfo()` plugin on FreeBSD accepts sysctl OIDs directly (e.g. `cpuinfo('hw.model')` instead of `cpuinfo('model name')`). Use the FreeBSD theme as a reference when adapting other themes.
 
 ### Theme design credits
 

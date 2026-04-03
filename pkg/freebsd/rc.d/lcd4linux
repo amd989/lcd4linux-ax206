@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# PROVIDE: lcd4linux
+# REQUIRE: LOGIN usbd
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name="lcd4linux"
+rcvar="lcd4linux_enable"
+
+: ${lcd4linux_enable:="NO"}
+: ${lcd4linux_config:="/usr/local/etc/lcd4linux/lcd4linux.conf"}
+
+command="/usr/local/bin/lcd4linux"
+command_args="-F -f ${lcd4linux_config}"
+
+pidfile="/var/run/${name}.pid"
+start_cmd="lcd4linux_start"
+stop_cmd="lcd4linux_stop"
+
+lcd4linux_start()
+{
+    if [ ! -f "${lcd4linux_config}" ]; then
+        echo "Error: ${lcd4linux_config} not found."
+        echo "Copy an example: cp /usr/local/etc/lcd4linux/examples/dpf_320x240.conf ${lcd4linux_config}"
+        return 1
+    fi
+    echo "Starting ${name}."
+    /usr/sbin/daemon -p ${pidfile} -f ${command} ${command_args}
+}
+
+lcd4linux_stop()
+{
+    if [ -f "${pidfile}" ]; then
+        echo "Stopping ${name}."
+        kill $(cat ${pidfile}) 2>/dev/null
+        rm -f ${pidfile}
+    fi
+}
+
+load_rc_config $name
+run_rc_command "$1"

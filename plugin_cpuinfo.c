@@ -5,6 +5,7 @@
  *
  * Copyright (C) 2003 Michael Reinelt <michael@reinelt.co.at>
  * Copyright (C) 2004 The LCD4Linux Team <lcd4linux-devel@users.sourceforge.net>
+ * Copyright (C) 2025-2026 Alejandro Mora <amd989@users.noreply.github.com>
  *
  * This file is part of LCD4Linux.
  *
@@ -45,13 +46,15 @@
 #include "plugin.h"
 #include "hash.h"
 
-#ifdef __MAC_OS_X_VERSION_10_3
+#if defined(__MAC_OS_X_VERSION_10_3) || defined(__FreeBSD__)
 #include <sys/types.h>
 #include <sys/sysctl.h>
 #endif
 
 static HASH CPUinfo;
+#if !defined(__MAC_OS_X_VERSION_10_3) && !defined(__FreeBSD__)
 static FILE *stream = NULL;
+#endif
 
 static int parse_cpuinfo(char __attribute__((unused)) * oid)
 {
@@ -62,7 +65,7 @@ static int parse_cpuinfo(char __attribute__((unused)) * oid)
     if (age > 0 && age <= 1000)
         return 0;
 
-#ifndef __MAC_OS_X_VERSION_10_3
+#if !defined(__MAC_OS_X_VERSION_10_3) && !defined(__FreeBSD__)
 
     /* Linux Kernel, /proc-filesystem */
 
@@ -104,7 +107,7 @@ static int parse_cpuinfo(char __attribute__((unused)) * oid)
 
 #else
 
-    /* MACH Kernel, MacOS X */
+    /* sysctl interface (MacOS X / FreeBSD) */
 
     char val_ret[256];
     int *val;
@@ -158,9 +161,11 @@ int plugin_init_cpuinfo(void)
 
 void plugin_exit_cpuinfo(void)
 {
+#if !defined(__MAC_OS_X_VERSION_10_3) && !defined(__FreeBSD__)
     if (stream != NULL) {
         fclose(stream);
         stream = NULL;
     }
+#endif
     hash_destroy(&CPUinfo);
 }

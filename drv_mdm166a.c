@@ -42,7 +42,11 @@
 #include <string.h>
 #include <errno.h>
 
+#ifdef HAVE_LIBUSB_1_0_LIBUSB_H
 #include <libusb-1.0/libusb.h>
+#else
+#include <libusb.h>
+#endif
 
 #include "debug.h"
 #include "cfg.h"

@@ -13,9 +13,16 @@ set -x
 # automake requires ChangeLog — point to CHANGELOG.md if it exists
 [ ! -f ChangeLog ] && [ -f CHANGELOG.md ] && ln -s CHANGELOG.md ChangeLog
 
-aclocal
-libtoolize --copy --force 
+# m4/ must exist before aclocal runs (configure.ac references it via AC_CONFIG_MACRO_DIR)
+mkdir -p m4
+
+# Build aclocal include flags for non-standard m4 macro paths (FreeBSD: /usr/local/share/aclocal)
+ACLOCAL_ARGS="-I m4"
+[ -d /usr/local/share/aclocal ] && ACLOCAL_ARGS="$ACLOCAL_ARGS -I /usr/local/share/aclocal"
+
+aclocal $ACLOCAL_ARGS
+libtoolize --copy --force
 autoheader
-automake --add-missing --copy --foreign 
+automake --add-missing --copy --foreign
 autoconf
 

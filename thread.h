@@ -31,13 +31,15 @@
 #ifndef _THREAD_H_
 #define _THREAD_H_
 
-#ifdef __CYGWIN__
-
+/* Define semun if the system doesn't provide it (glibc doesn't, FreeBSD does) */
 #ifndef HAVE_UNION_SEMUN
 union semun {
     int val;
     struct semid_ds *buf;
     unsigned short *array;
+#ifdef __linux__
+    struct seminfo *__buf;
+#endif
 };
 #endif
 
@@ -46,8 +48,6 @@ union semun {
 #endif
 #ifndef SHM_W
 #define SHM_W 0660
-#endif
-
 #endif
 
 extern int thread_argc;

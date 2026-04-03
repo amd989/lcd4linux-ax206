@@ -5,6 +5,7 @@
  *
  * Copyright (C) 2003 Michael Reinelt <michael@reinelt.co.at>
  * Copyright (C) 2004 The LCD4Linux Team <lcd4linux-devel@users.sourceforge.net>
+ * Copyright (C) 2025-2026 Alejandro Mora <amd989@users.noreply.github.com>
  *
  * This file is part of LCD4Linux.
  *
@@ -40,6 +41,12 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
+#include <unistd.h>
+
+#ifdef __FreeBSD__
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#endif
 
 #include "debug.h"
 #include "plugin.h"
@@ -48,7 +55,9 @@
 
 
 static HASH MemInfo;
+#ifndef __FreeBSD__
 static FILE *stream = NULL;
+#endif
 
 static int parse_meminfo(void)
 {
@@ -59,6 +68,62 @@ static int parse_meminfo(void)
     if (age > 0 && age <= 10)
         return 0;
 
+#ifdef __FreeBSD__
+    {
+        unsigned long physmem, pagesize;
+        unsigned int v_free, v_inactive, v_active;
+        size_t len;
+        char val[32];
+        int total_swap, used_swap;
+
+        pagesize = getpagesize();
+
+        len = sizeof(physmem);
+        if (sysctlbyname("hw.physmem", &physmem, &len, NULL, 0) < 0) {
+            error("sysctl(hw.physmem) failed: %s", strerror(errno));
+            return -1;
+        }
+
+        /* All values in kB to match /proc/meminfo format */
+        snprintf(val, sizeof(val), "%lu", physmem / 1024);
+        hash_put(&MemInfo, "MemTotal", val);
+
+        len = sizeof(v_free);
+        sysctlbyname("vm.stats.vm.v_free_count", &v_free, &len, NULL, 0);
+        snprintf(val, sizeof(val), "%lu", (unsigned long)v_free * pagesize / 1024);
+        hash_put(&MemInfo, "MemFree", val);
+
+        len = sizeof(v_inactive);
+        sysctlbyname("vm.stats.vm.v_inactive_count", &v_inactive, &len, NULL, 0);
+
+        len = sizeof(v_active);
+        sysctlbyname("vm.stats.vm.v_active_count", &v_active, &len, NULL, 0);
+
+        /* MemAvailable ~ free + inactive */
+        snprintf(val, sizeof(val), "%lu", ((unsigned long)v_free + v_inactive) * pagesize / 1024);
+        hash_put(&MemInfo, "MemAvailable", val);
+
+        /* Cached ~ inactive pages */
+        snprintf(val, sizeof(val), "%lu", (unsigned long)v_inactive * pagesize / 1024);
+        hash_put(&MemInfo, "Cached", val);
+
+        /* No separate buffer cache on FreeBSD */
+        hash_put(&MemInfo, "Buffers", "0");
+
+        /* Swap info via vm.swap_total (bytes) */
+        len = sizeof(total_swap);
+        if (sysctlbyname("vm.swap_total", &total_swap, &len, NULL, 0) == 0) {
+            snprintf(val, sizeof(val), "%d", total_swap / 1024);
+            hash_put(&MemInfo, "SwapTotal", val);
+        }
+
+        len = sizeof(used_swap);
+        if (sysctlbyname("vm.swap_reserved", &used_swap, &len, NULL, 0) == 0) {
+            snprintf(val, sizeof(val), "%d", (total_swap - used_swap) / 1024);
+            hash_put(&MemInfo, "SwapFree", val);
+        }
+    }
+#else
     if (stream == NULL)
         stream = fopen("/proc/meminfo", "r");
     if (stream == NULL) {
@@ -98,6 +163,7 @@ static int parse_meminfo(void)
             hash_put(&MemInfo, key, val);
         }
     }
+#endif
     return 0;
 }
 
@@ -129,9 +195,11 @@ int plugin_init_meminfo(void)
 
 void plugin_exit_meminfo(void)
 {
+#ifndef __FreeBSD__
     if (stream != NULL) {
         fclose(stream);
         stream = NULL;
     }
+#endif
     hash_destroy(&MemInfo);
 }
