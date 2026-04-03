@@ -5,6 +5,7 @@
  *
  * Copyright (C) 1999, 2000 Michael Reinelt <michael@reinelt.co.at>
  * Copyright (C) 2004 The LCD4Linux Team <lcd4linux-devel@users.sourceforge.net>
+ * Copyright (C) 2025-2026 Alejandro Mora <amd989@users.noreply.github.com>
  *
  * This file is part of LCD4Linux.
  *
