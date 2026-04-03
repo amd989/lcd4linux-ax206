@@ -1,4 +1,4 @@
-# LCD4Linux for AX206 USB Displays
+# LCD4Linux for AX206 USB Displays  [![CI Build Test](https://github.com/amd989/lcd4linux-ax206/actions/workflows/ci.yml/badge.svg)](https://github.com/amd989/lcd4linux-ax206/actions/workflows/ci.yml)
 
 This is a fork of [ukoda's lcd4linux-ax206](https://github.com/ukoda/lcd4linux-ax206), which itself is a fork of [MaxWiesel's lcd4linux-max](https://github.com/MaxWiesel/lcd4linux-max), focused on making AX206 USB LCD displays (commonly sold as "AIDA64 3.5" USB displays") easy to set up on modern Linux systems including Rocky/RHEL, Ubuntu/Mint, and Raspberry Pi.
 
