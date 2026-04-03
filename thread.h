@@ -5,6 +5,7 @@
  *
  * Copyright (C) 2004 Michael Reinelt <michael@reinelt.co.at>
  * Copyright (C) 2004 The LCD4Linux Team <lcd4linux-devel@users.sourceforge.net>
+ * Copyright (C) 2025-2026 Alejandro Mora <amd989@users.noreply.github.com>
  *
  * parts of this code are based on the old XWindow driver which is
  * Copyright (C) 2000 Herbert Rosmanith <herp@wildsau.idv.uni-linz.ac.at>

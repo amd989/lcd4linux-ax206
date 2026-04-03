@@ -1,7 +1,7 @@
 /*
  * gauge widget handling
  *
- * Copyright (C) 2025 lcd4linux-ax206 contributors
+ * Copyright (C) 2025-2026 Alejandro Mora <amd989@users.noreply.github.com>
  *
  * This file is part of LCD4Linux.
  *

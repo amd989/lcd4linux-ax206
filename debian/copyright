@@ -6,6 +6,7 @@ Source: https://github.com/amd989/lcd4linux-ax206
 Files: *
 Copyright: 1999-2006 Michael Reinelt <michael@reinelt.co.at>
            2004-2011 The LCD4Linux Team <lcd4linux-devel@users.sourceforge.net>
+           2026 Alejandro Mora <amd989@users.noreply.github.com>
 License: GPL-2.0+
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by

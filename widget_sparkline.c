@@ -5,7 +5,7 @@
  * Stores samples in a ring buffer (one per pixel column) and draws
  * connected line segments using GD's gdImageLine().
  *
- * Copyright (C) 2025 lcd4linux-ax206 contributors
+ * Copyright (C) 2025-2026 Alejandro Mora <amd989@users.noreply.github.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -4,7 +4,7 @@
  * Renders a circular arc gauge that fills proportionally to an expression
  * value. Uses GD's gdImageFilledArc() for drawing arcs.
  *
- * Copyright (C) 2025 lcd4linux-ax206 contributors
+ * Copyright (C) 2025-2026 Alejandro Mora <amd989@users.noreply.github.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
