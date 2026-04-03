@@ -14,6 +14,5 @@ categories: [sysutils]
 licenselogic: single
 licenses: [GPLv2]
 deps: {
-  libusb: { origin: devel/libusb, version: "1.0" },
   libgd: { origin: graphics/gd, version: "2" }
 }
