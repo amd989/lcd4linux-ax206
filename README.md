@@ -125,7 +125,7 @@ sudo dnf install gcc make autoconf automake libtool pkgconfig \
 **FreeBSD:**
 ```bash
 # libusb is part of FreeBSD base — no package needed
-sudo pkg install autoconf automake libtool pkgconf \
+sudo pkg install autoconf automake libtool pkgconf gettext-tools \
     libgd libvncserver xorg-libraries
 ```
 
