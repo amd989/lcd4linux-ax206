@@ -83,8 +83,10 @@ AC_CHECK_HEADERS(sys/io.h, [has_io_h="true"], [has_io_h="false"])
 # check for usb.h
 AC_CHECK_HEADERS(usb.h, [has_usb="true"], [has_usb="false"])
 
-# check for libusb-1.0/libusb.h
-AC_CHECK_HEADERS(libusb-1.0/libusb.h, [has_usb10="true"], [has_usb10="false"])
+# check for libusb-1.0 (Linux: libusb-1.0/libusb.h, FreeBSD: libusb.h in base)
+AC_CHECK_HEADERS(libusb-1.0/libusb.h, [has_usb10="true"], [
+  AC_CHECK_HEADERS(libusb.h, [has_usb10="true"], [has_usb10="false"])
+])
 
 # check for sys/sysctl.h (FreeBSD system info)
 AC_CHECK_HEADERS([sys/sysctl.h], [has_sysctl="true"], [has_sysctl="false"])

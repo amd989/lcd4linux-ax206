@@ -507,7 +507,11 @@ DRIVER drv_DPF = {
 // See http://dpf-ax.sourceforge.net/
 //###################################################################
 
-#include "libusb-1.0/libusb.h"
+#ifdef HAVE_LIBUSB_1_0_LIBUSB_H
+#include <libusb-1.0/libusb.h>
+#else
+#include <libusb.h>
+#endif
 
 #define AX206_VID 0x1908        // Hacked frames USB Vendor ID
 #define AX206_PID 0x0102        // Hacked frames USB Product ID
