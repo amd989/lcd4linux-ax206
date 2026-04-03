@@ -405,14 +405,30 @@ fi
 
 # IConv
 if test "$PLUGIN_ICONV" = "yes"; then
-   AM_ICONV
-   if test "$am_cv_func_iconv" = "yes"; then 
-      PLUGINS="$PLUGINS plugin_iconv.o"
-      PLUGINLIBS="$PLUGINLIBS $LIBICONV"
-      AC_DEFINE(PLUGIN_ICONV,1,[iconv charset converter plugin])
-   else
-      AC_MSG_WARN(iconv not found: iconv plugin disabled)
-   fi
+   m4_ifdef([AM_ICONV], [
+      AM_ICONV
+      if test "$am_cv_func_iconv" = "yes"; then
+         PLUGINS="$PLUGINS plugin_iconv.o"
+         PLUGINLIBS="$PLUGINLIBS $LIBICONV"
+         AC_DEFINE(PLUGIN_ICONV,1,[iconv charset converter plugin])
+      else
+         AC_MSG_WARN(iconv not found: iconv plugin disabled)
+      fi
+   ], [
+      dnl AM_ICONV macro not available — check for iconv directly
+      AC_CHECK_FUNC(iconv, [
+         PLUGINS="$PLUGINS plugin_iconv.o"
+         AC_DEFINE(PLUGIN_ICONV,1,[iconv charset converter plugin])
+      ], [
+         AC_CHECK_LIB(iconv, iconv, [
+            PLUGINS="$PLUGINS plugin_iconv.o"
+            PLUGINLIBS="$PLUGINLIBS -liconv"
+            AC_DEFINE(PLUGIN_ICONV,1,[iconv charset converter plugin])
+         ], [
+            AC_MSG_WARN(iconv not found: iconv plugin disabled)
+         ])
+      ])
+   ])
 fi
 
 # ISDN monitor
