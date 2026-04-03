@@ -84,7 +84,11 @@ static void my_statfs(RESULT * result, RESULT * arg1, RESULT * arg2)
         value = buf.f_fsid;
 #endif
     } else if (strcasecmp(key, "namelen") == 0) {
+#ifdef __FreeBSD__
+        value = buf.f_namemax;
+#else
         value = buf.f_namelen;
+#endif
     } else {
         error("statfs: unknown field '%s'", key);
         value = -1;
