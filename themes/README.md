@@ -122,4 +122,13 @@ Portrait system monitor with CPU, RAM, disk, and network stats.
 | **[SimpleWhite](SimpleWhite/)** | **[SimpleWhiteNas](SimpleWhiteNas/)** | **[SimpleWhiteNasIO](SimpleWhiteNasIO/)** |
 | [![SimpleWhite](SimpleWhite/preview.png)](SimpleWhite/dpf_simplewhite.conf)<br>*Portrait system monitor with CPU, RAM, disk, and network stats* | [![SimpleWhiteNas](SimpleWhiteNas/preview.png)](SimpleWhiteNas/dpf_simplewhitenas.conf)<br>*4-bay NAS monitor — drive usage %, size, temperature, and sparkline history per drive. Requires `drivetemp` kernel module.* | [![SimpleWhiteNasIO](SimpleWhiteNasIO/preview.png)](SimpleWhiteNasIO/dpf_simplewhitenasio.conf)<br>*4-bay NAS monitor — drive usage %, temperature, size, and disk I/O throughput sparkline per drive* |
 | **[SimpleWhite-FreeBSD](SimpleWhite-FreeBSD/)** | | |
-| [![SimpleWhite-FreeBSD](SimpleWhite/preview.png)](SimpleWhite-FreeBSD/dpf_simplewhite_freebsd.conf)<br>*FreeBSD-adapted SimpleWhite using `sysctl`-based commands instead of `/sys/` and `/proc/` paths* *(no preview)* | | |
+---
+
+## Router / Networking
+
+Specialized layouts for networking gear and router dashboards.
+
+| | | |
+|:---:|:---:|:---:|
+| **[OPNSense](OPNSense/)** | | |
+| [![OPNSense](OPNSense/Preview.png)](OPNSense/dpf_opnsense.conf)<br>*OPNSense-styled dashboard with network traffic sparklines, connected devices, system health, and firewall stats. Uses Source Sans 3 font.* | | |
