@@ -361,52 +361,15 @@ expression  precision(file::readline(F_PW, 3), 3) . ' kW '
 
 ## Themes
 
-Pre-built themes are included in the `themes/` directory. Each theme contains a config file, a background image, and a preview screenshot. To use a theme, copy or symlink its config file:
+35+ pre-built themes are included in the [`themes/`](themes/) directory, covering system monitors, NAS dashboards, landscape layouts, cyberpunk/terminal styles, and more — in portrait and landscape orientations with color variants for each style.
+
+**[Browse the Theme Gallery →](themes/README.md)**
+
+To use a theme, point lcd4linux at its config file:
 
 ```bash
 lcd4linux -F -c themes/SimpleWhite/dpf_simplewhite.conf
 ```
-
-### Available themes
-
-**System monitor themes** — general-purpose system information displays for 320x480 portrait:
-
-| Theme | Description |
-|-------|-------------|
-| [SimpleWhite](themes/SimpleWhite/), [SimpleBlue](themes/SimpleBlue/), [SimpleGreen](themes/SimpleGreen/), [SimpleRed](themes/SimpleRed/), [SimpleOrange](themes/SimpleOrange/), [SimplePurple](themes/SimplePurple/), [SimpleYellow](themes/SimpleYellow/), [SimpleNeon](themes/SimpleNeon/) | System monitor with CPU, RAM, disk, and network stats in various color schemes |
-| [SimpleBlueFall](themes/SimpleBlueFall/), [SimpleGreenFall](themes/SimpleGreenFall/), [SimpleOrangeFall](themes/SimpleOrangeFall/), [SimplePurpleFall](themes/SimplePurpleFall/), [SimpleRedFall](themes/SimpleRedFall/), [SimpleYellowFall](themes/SimpleYellowFall/) | Alternate color variants |
-| [SimpleBlueGauge](themes/SimpleBlueGauge/), [SimpleGreenGauge](themes/SimpleGreenGauge/), [SimpleOrangeGauge](themes/SimpleOrangeGauge/), [SimplePurpleGauge](themes/SimplePurpleGauge/), [SimpleRedGauge](themes/SimpleRedGauge/), [SimpleYellowGauge](themes/SimpleYellowGauge/), [SimpleNeonGauge](themes/SimpleNeonGauge/), [SimpleRedGaugeRedBg](themes/SimpleRedGaugeRedBg/), [SimpleCyberpunkGauge](themes/SimpleCyberpunkGauge/) | Gauge-style variants with radial gauge meters |
-| [SimpleMulticolor](themes/SimpleMulticolor/) | Multi-color variant |
-| [Cyberpunk](themes/Cyberpunk/), [Cyberpunk-net](themes/Cyberpunk-net/) | Cyberpunk 2077-styled system monitor (net variant replaces disk with download/upload speeds) |
-| [bash-dark-green](themes/bash-dark-green/), [bash-dark-green-gpu](themes/bash-dark-green-gpu/) | Hacker/terminal-style green-on-black with CPU, RAM, network, and disk gauges (GPU variant adds GPU usage, VRAM, and temperature) |
-
-**Landscape themes** — 480x320 landscape system monitors (Orientation 0):
-
-| Theme | Description |
-|-------|-------------|
-| [Cyberdeck](themes/Cyberdeck/) | Multi-gauge cyberdeck display with CPU, GPU, RAM, fan speeds, FPS sparkline, and network stats |
-| [LandscapeEarth](themes/LandscapeEarth/) | Clean Earth-themed monitor with CPU, GPU, RAM bars and temperature |
-| [LandscapeModernDevice35](themes/LandscapeModernDevice35/) | Server dashboard with CPU sparkline, ETH/WiFi network sparklines, memory, disk, and uptime |
-| [LandscapeMagicBlue](themes/LandscapeMagicBlue/) | Sci-fi dashboard with 4 radial gauges (CPU, GPU, RAM, GPU RAM), network speeds, and disk usage |
-
-**NAS themes** — 4-bay drive monitor layouts designed for NAS/server use:
-
-| Theme | Description |
-|-------|-------------|
-| [SimpleWhiteNas](themes/SimpleWhiteNas/) | 4-bay NAS monitor showing drive usage %, used/total size, temperature, and temperature sparkline history per drive. Requires the `drivetemp` kernel module. |
-| [SimpleWhiteNasIO](themes/SimpleWhiteNasIO/) | 4-bay NAS monitor showing drive usage %, temperature, size, and disk I/O throughput sparkline with M/s overlay per drive. Uses `/sys/block/*/stat` for I/O delta calculation. |
-
-The NAS themes require editing the `Variables` section to match your drive configuration (partition paths, block device names, display labels). Both support VNC mirroring out of the box — just install `libvncserver` and build with `--with-drivers=DPF,VNC`.
-
-**FreeBSD themes:**
-
-| Theme | Description |
-|-------|-------------|
-| [SimpleWhite-FreeBSD](themes/SimpleWhite-FreeBSD/) | FreeBSD-adapted SimpleWhite with `sysctl`-based commands replacing Linux `/sys/` and `/proc/` paths |
-
-The standard Linux themes use `exec()` calls that read from `/sys/class/thermal/`, `/proc/cpuinfo`, etc. These paths don't exist on FreeBSD. The FreeBSD theme variant uses `sysctl -n` commands instead (e.g. `sysctl -n dev.cpu.0.temperature`). The `cpuinfo()` plugin on FreeBSD accepts sysctl OIDs directly (e.g. `cpuinfo('hw.model')` instead of `cpuinfo('model name')`). Use the FreeBSD theme as a reference when adapting other themes.
-
-### Theme design credits
 
 Original theme designs from [turing-smart-screen-python](https://github.com/mathoudebine/turing-smart-screen-python), adapted for lcd4linux. Theme authors: [@takattila](https://github.com/takattila), [@mathoudebine](https://github.com/mathoudebine), [@napobear](https://github.com/napobear), [@amiltonjr](https://github.com/amiltonjr). Licensed under GPL-3.0.
 
