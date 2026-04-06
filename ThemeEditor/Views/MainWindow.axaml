@@ -1,0 +1,254 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ThemeEditor.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ThemeEditor.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="LCD4Linux Theme Editor"
+        Background="#1B1B1F"
+        KeyDown="Window_KeyDown">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Window.Styles>
+        <!-- Toolbar buttons -->
+        <Style Selector="Button.toolbar">
+            <Setter Property="Background" Value="#0D7377" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="14,6" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style Selector="Button.toolbar:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#0FA4A9" />
+        </Style>
+        <Style Selector="Button.toolbar:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#0A5C5F" />
+        </Style>
+
+        <!-- Property panel labels -->
+        <Style Selector="TextBlock.prop-label">
+            <Setter Property="Foreground" Value="#A0A0B0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!-- Property panel section header -->
+        <Style Selector="TextBlock.section-header">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="#60C0C4" />
+            <Setter Property="Margin" Value="0,2,0,4" />
+        </Style>
+
+        <!-- Property row hover -->
+        <Style Selector="Border.prop-row">
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="Margin" Value="4,1" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Border.prop-row:pointerover">
+            <Setter Property="Background" Value="#18FFFFFF" />
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- Toolbar -->
+        <Border Grid.Row="0" Background="#252530" BorderBrush="#3A3A48" BorderThickness="0,0,0,1"
+                Padding="12,8">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                    <Button Classes="toolbar" Content="Load Theme" Click="LoadTheme_Click" />
+                    <Button Classes="toolbar" Content="Save Theme" Command="{Binding SaveCommand}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <TextBlock Text="Zoom" VerticalAlignment="Center" Foreground="#8888A0" FontSize="12" />
+                    <Slider Minimum="0.5" Maximum="3.0" Value="{Binding Zoom}" Width="140"
+                            TickFrequency="0.1" IsSnapToTickEnabled="True" />
+                    <TextBlock Text="{Binding Zoom, StringFormat={}{0:P0}}"
+                               VerticalAlignment="Center" Width="44" Foreground="#C0C0D0" FontSize="12" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, 290">
+            <!-- Canvas Area -->
+            <Border Grid.Column="0" Background="#141418" Margin="0">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <!-- LCD frame -->
+                    <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Background="Transparent" BorderThickness="0"
+                            Padding="0"
+                            Margin="20"
+                            Width="{Binding DisplayWidth}" Height="{Binding DisplayHeight}">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" />
+                        </Border.RenderTransform>
+                        <Grid>
+                            <ItemsControl ItemsSource="{Binding Widgets}"
+                                          PointerPressed="Canvas_PointerPressed"
+                                          PointerMoved="Canvas_PointerMoved"
+                                          PointerReleased="Canvas_PointerReleased"
+                                          PointerWheelChanged="Canvas_PointerWheelChanged"
+                                          Focusable="True">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <Canvas Background="Transparent" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.Styles>
+                                    <Style Selector="ContentPresenter" x:DataType="vm:WidgetViewModel">
+                                        <Setter Property="Canvas.Left" Value="{Binding Y}" />
+                                        <Setter Property="Canvas.Top" Value="{Binding X}" />
+                                        <Setter Property="ZIndex" Value="{Binding AvaloniaZIndex}" />
+                                    </Style>
+                                    <Style Selector="Border.widget">
+                                        <Setter Property="BorderBrush" Value="#5000D0D0" />
+                                        <Setter Property="BorderThickness" Value="1" />
+                                    </Style>
+                                    <Style Selector="Border.widget:pointerover">
+                                        <Setter Property="BorderBrush" Value="#9000E8E8" />
+                                    </Style>
+                                    <Style Selector="Border.widget.selected">
+                                        <Setter Property="BorderBrush" Value="#E8A030" />
+                                        <Setter Property="BorderThickness" Value="2" />
+                                    </Style>
+                                </ItemsControl.Styles>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Classes.widget="True" Classes.selected="{Binding IsSelected}"
+                                                Background="Transparent"
+                                                Tapped="Widget_Tapped"
+                                                Width="{Binding Width}"
+                                                Height="{Binding Height}"
+                                                IsHitTestVisible="{Binding !IsBackground}">
+                                            <Panel Background="{Binding BackgroundBrush}">
+                                                <Image Source="{Binding ImageBitmap}" IsVisible="{Binding IsImage}" Stretch="Fill" />
+                                                <TextBlock Text="{Binding DisplayText}"
+                                                           IsVisible="{Binding IsText}"
+                                                           Foreground="{Binding ForegroundBrush}"
+                                                           TextAlignment="{Binding TextAlignment}"
+                                                           VerticalAlignment="Center"
+                                                           FontSize="10"
+                                                           TextWrapping="Wrap" />
+                                            </Panel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Canvas IsHitTestVisible="False">
+                                <Rectangle Name="SelectionBox" Fill="#400080FF" Stroke="Cyan" StrokeThickness="1" StrokeDashArray="2,2" IsVisible="False" />
+                            </Canvas>
+                        </Grid>
+                    </Border>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Property Panel -->
+            <Border Grid.Column="1" Background="#1F1F26" BorderBrush="#3A3A48" BorderThickness="1,0,0,0">
+                <Grid RowDefinitions="Auto, Auto, *">
+                    <!-- Panel Header -->
+                    <Border Grid.Row="0" Background="#282835" Padding="12,8" BorderBrush="#3A3A48" BorderThickness="0,0,0,1">
+                        <TextBlock Text="Properties" FontWeight="Bold" FontSize="14" Foreground="#D0D0E0" />
+                    </Border>
+
+                    <!-- Layout Properties (X, Y) -->
+                    <ContentControl Grid.Row="1" Content="{Binding SelectedWidget}">
+                        <ContentControl.ContentTemplate>
+                            <DataTemplate x:DataType="vm:WidgetViewModel">
+                                <StackPanel Margin="10,8,10,4">
+                                    <TextBlock Classes="section-header" Text="Layout" />
+
+                                    <Border Classes="prop-row">
+                                        <Grid ColumnDefinitions="90, *">
+                                            <TextBlock Grid.Column="0" Classes="prop-label" Text="X (Row)" />
+                                            <TextBox Grid.Column="1" Text="{Binding X}" FontSize="12" />
+                                        </Grid>
+                                    </Border>
+                                    <Border Classes="prop-row">
+                                        <Grid ColumnDefinitions="90, *">
+                                            <TextBlock Grid.Column="0" Classes="prop-label" Text="Y (Col)" />
+                                            <TextBox Grid.Column="1" Text="{Binding Y}" FontSize="12" />
+                                        </Grid>
+                                    </Border>
+                                    <Border Classes="prop-row">
+                                        <Grid ColumnDefinitions="90, *">
+                                            <TextBlock Grid.Column="0" Classes="prop-label" Text="Layer" />
+                                            <TextBox Grid.Column="1" Text="{Binding ZIndex}" FontSize="12" IsEnabled="False"
+                                                     ToolTip.Tip="Layer index is managed by the layout structure." />
+                                        </Grid>
+                                    </Border>
+
+                                    <Border Height="1" Background="#3A3A48" Margin="0,8,0,4" />
+                                    <TextBlock Classes="section-header" Text="Widget" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ContentControl.ContentTemplate>
+                    </ContentControl>
+
+                    <ScrollViewer Grid.Row="2">
+                        <ItemsControl ItemsSource="{Binding SelectedWidget.Properties}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:PropertyViewModel">
+                                    <Border Classes="prop-row">
+                                        <Grid ColumnDefinitions="90, *">
+                                            <TextBlock Grid.Column="0" Classes="prop-label" Text="{Binding Key}" />
+
+                                            <Panel Grid.Column="1">
+                                                <!-- Standard Text Editor -->
+                                                <TextBox Text="{Binding Value}" FontSize="12" IsVisible="{Binding IsStandard}" />
+
+                                                <!-- Boolean Checkbox -->
+                                                <CheckBox IsChecked="{Binding BooleanValue}"
+                                                          IsVisible="{Binding IsBoolean}"
+                                                          VerticalAlignment="Center" />
+
+                                                <!-- Numeric Spinner -->
+                                                <NumericUpDown Value="{Binding NumericValue}"
+                                                               Minimum="0" Maximum="9999"
+                                                               Increment="1"
+                                                               FormatString="0"
+                                                               IsVisible="{Binding IsNumeric}"
+                                                               HorizontalAlignment="Stretch" />
+
+                                                <!-- Class Dropdown -->
+                                                <ComboBox ItemsSource="{Binding ClassOptions}"
+                                                          SelectedItem="{Binding SelectedClass}"
+                                                          HorizontalAlignment="Stretch"
+                                                          IsVisible="{Binding IsClass}" />
+
+                                                <!-- Alignment Dropdown -->
+                                                <ComboBox ItemsSource="{Binding AlignOptions}"
+                                                          SelectedItem="{Binding SelectedAlign}"
+                                                          HorizontalAlignment="Stretch"
+                                                          IsVisible="{Binding IsAlign}" />
+
+                                                <!-- Color Editor -->
+                                                <Grid ColumnDefinitions="*, Auto" IsVisible="{Binding IsColor}">
+                                                    <TextBox Grid.Column="0" Text="{Binding Value}" FontSize="12" VerticalAlignment="Center" />
+                                                    <ColorPicker Grid.Column="1" Color="{Binding ColorValue}" Width="40" Height="30" Margin="5,0,0,0" />
+                                                </Grid>
+                                            </Panel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
