@@ -52,8 +52,9 @@ typedef struct WIDGET_SPARKLINE {
     PROPERTY colorhigh;         /* line color above valuehigh threshold */
     PROPERTY valuehigh;         /* threshold above which to use colorhigh */
     PROPERTY background;        /* background color */
+    PROPERTY samples;           /* optional max ring-buffer size (default: length) */
     double *history;            /* ring buffer of sampled values */
-    int nsamples;               /* size of ring buffer (= xsize) */
+    int nsamples;               /* size of ring buffer (<= length unless samples set larger) */
     int head;                   /* next write index */
     int count;                  /* number of valid samples */
     double min;                 /* current min for auto-scaling */

@@ -2,7 +2,7 @@
  * sparkline widget handling
  *
  * Renders a line graph of historical values sampled from an expression.
- * Stores samples in a ring buffer (one per pixel column) and draws
+ * Stores samples in a ring buffer and draws
  * connected line segments using GD's gdImageLine().
  *
  * Copyright (C) 2025-2026 Alejandro Mora <amd989@users.noreply.github.com>
@@ -366,6 +366,7 @@ int widget_sparkline_init(WIDGET *Self)
         property_load(section, "colorhigh",  NULL,       &Spark->colorhigh);
         property_load(section, "valuehigh",  NULL,       &Spark->valuehigh);
         property_load(section, "background", "000000",   &Spark->background);
+        property_load(section, "samples",    NULL,       &Spark->samples);
 
         /* sanity checks */
         if (!property_valid(&Spark->value)) {
@@ -390,8 +391,15 @@ int widget_sparkline_init(WIDGET *Self)
         Spark->xsize = P2N(&Spark->width);
         Spark->ysize = P2N(&Spark->length);
 
-        /* allocate ring buffer (one sample per pixel along the length axis) */
-        Spark->nsamples = Spark->ysize;
+        /* Ring buffer size: optional `samples N` caps history; default is one per pixel along length */
+        if (property_valid(&Spark->samples)) {
+            property_eval(&Spark->samples);
+            Spark->nsamples = (int)(P2N(&Spark->samples) + 0.5);
+            if (Spark->nsamples < 1)
+                Spark->nsamples = Spark->ysize;
+        } else {
+            Spark->nsamples = Spark->ysize;
+        }
         if (Spark->nsamples > 0) {
             Spark->history = calloc(Spark->nsamples, sizeof(double));
         }
@@ -442,6 +450,7 @@ int widget_sparkline_quit(WIDGET *Self)
                 property_free(&Spark->colorhigh);
                 property_free(&Spark->valuehigh);
                 property_free(&Spark->background);
+                property_free(&Spark->samples);
 
                 free(Self->data);
                 Self->data = NULL;
