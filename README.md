@@ -359,6 +359,38 @@ Example:
 expression  precision(file::readline(F_PW, 3), 3) . ' kW '
 ```
 
+## Theme Editor
+
+A visual theme editor is included in the [`ThemeEditor/`](ThemeEditor/) directory. It is a cross-platform desktop application (Avalonia UI, .NET 10) that lets you open, preview, and edit lcd4linux theme config files without touching the raw text.
+
+Features:
+- Opens any lcd4linux `.conf` file and renders its widgets on a scaled canvas
+- Drag widgets to reposition them; positions are written back to the `Layout` section on save
+- Property panel on the right lets you edit widget fields — text, colors (with a color picker), numbers, dropdowns for `class` and `align` fields
+- Image widgets display their actual image file on the canvas
+- Zoom slider (50%–300%) for detailed layout work
+- Undo/redo support
+- Detects display orientation from the config (`Orientation` field) and sizes the canvas accordingly (480×320 landscape, 320×480 portrait)
+
+### Building the Theme Editor
+
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
+
+```bash
+cd ThemeEditor
+dotnet build
+dotnet run
+```
+
+### Usage
+
+1. Launch the editor and click **Load Theme**
+2. Browse to a theme `.conf` file (e.g. `themes/SimpleWhite/dpf_simplewhite.conf`)
+3. The display canvas shows all widgets at their configured positions
+4. Click a widget to select it and edit its properties in the panel on the right
+5. Drag widgets to reposition them on the canvas
+6. Click **Save Theme** to write changes back to the original `.conf` file
+
 ## Themes
 
 35+ pre-built themes are included in the [`themes/`](themes/) directory, covering system monitors, NAS dashboards, landscape layouts, cyberpunk/terminal styles, and more — in portrait and landscape orientations with color variants for each style.
