@@ -116,6 +116,83 @@ jobs:
           name: rpm-${{ matrix.arch }}
           path: output/*.rpm
 
+  build-themeeditor:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            archive_ext: zip
+          - os: ubuntu-latest
+            rid: linux-x64
+            archive_ext: tar.gz
+          - os: ubuntu-latest
+            rid: linux-arm64
+            archive_ext: tar.gz
+          - os: macos-14
+            rid: osx-x64
+            archive_ext: tar.gz
+          - os: macos-latest
+            rid: osx-arm64
+            archive_ext: tar.gz
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: version
+        shell: bash
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore ThemeEditor/ThemeEditor.csproj -r ${{ matrix.rid }}
+
+      - name: Publish self-contained single-file
+        shell: bash
+        run: |
+          dotnet publish ThemeEditor/ThemeEditor.csproj \
+            -c Release \
+            -r ${{ matrix.rid }} \
+            --self-contained true \
+            --no-restore \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            -p:DebugType=None \
+            -p:DebugSymbols=false \
+            -p:Version=${{ steps.version.outputs.version }} \
+            -o publish
+
+      - name: Package (zip)
+        if: matrix.archive_ext == 'zip'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path output | Out-Null
+          $name = "ThemeEditor-${{ steps.version.outputs.version }}-${{ matrix.rid }}.zip"
+          Compress-Archive -Path publish/* -DestinationPath "output/$name"
+
+      - name: Package (tar.gz)
+        if: matrix.archive_ext == 'tar.gz'
+        shell: bash
+        run: |
+          mkdir -p output
+          name="ThemeEditor-${{ steps.version.outputs.version }}-${{ matrix.rid }}.tar.gz"
+          tar -czf "output/$name" -C publish .
+
+      - name: Upload ThemeEditor artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: themeeditor-${{ matrix.rid }}
+          path: output/*
+
   build-freebsd:
     runs-on: [self-hosted, freebsd]
     timeout-minutes: 30
@@ -166,7 +243,7 @@ jobs:
           rm -rf dist repo
 
   release:
-    needs: [build, build-rpm, build-freebsd]
+    needs: [build, build-rpm, build-freebsd, build-themeeditor]
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
@@ -182,6 +259,8 @@ jobs:
             packages/*.deb
             packages/*.rpm
             packages/*.pkg
+            packages/ThemeEditor-*.zip
+            packages/ThemeEditor-*.tar.gz
           generate_release_notes: true
           prerelease: ${{ contains(github.ref_name, '-') }}
 
