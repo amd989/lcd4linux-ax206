@@ -172,224 +172,57 @@ When creating a new widget, the `typedef struct WIDGET_MYNEWWIDGET` must have it
 Config file information
 =======================
 
-The best documentation on the configuration file is at [The unofficial LCD4Linux Wiki](https://wiki.lcd4linux.tk/doku.php/start).  Below is information specific to this fork.
+The best documentation on the configuration file is at [The unofficial LCD4Linux Wiki](https://wiki.lcd4linux.tk/doku.php/start). Full documentation for features specific to this fork is on the [AX206 fork wiki](https://github.com/amd989/lcd4linux-ax206/wiki/ax206_features). Brief summaries are below.
 
 ## Display settings
 
-The `backlight` setting is not linear and will blank the display or flicker at low values.  To improve this a `brightness` setting has been added with the range 0 to 100 (default 100).  It scales pixel values as a percentage.  Set the lowest `backlight` value that gives a stable backlight, then use `brightness` to dim to suit your needs.  Setting backlight higher than needed will cause light bleed on black areas.
+A `brightness` setting (0–100) has been added alongside `backlight` for smooth dimming without flicker. A `LCD::brightness` plugin mirrors `LCD::backlight` for runtime adjustment via a Timer widget.
 
-## Display Plugins
-
-The display has an undocumented `LCD::backlight` plugin that you would normally call from a Timer Widget to adjust the backlight during operation.  A `LCD::brightness` plugin has been added to control pixel brightness in the same way.
+See [AX206 Fork Features](https://github.com/amd989/lcd4linux-ax206/wiki/ax206_features) on the wiki for details.
 
 ## TrueType Widget
 
-The TrueType widget class from Eric Loxat renders text using TrueType fonts.
+Renders text using TrueType fonts via libgd. Supports variable font size, alignment, background color, and a debug border mode.
 
-Fields:
-- `class`: Must be 'Truetype'.
-- `expression`: The expression for the text to display.
-- `font`: The full path to the TrueType font file.
-- `size`: Font height (not including descenders, not in pixels). If 0 or omitted, auto-sizes to fit the box.
-- `width`: Width of the bounding box in pixels.
-- `height`: Height of the bounding box in pixels.
-- `align`: Horizontal alignment: 'L', 'C', or 'R'.
-- `fcolor`: Font color as RGB or RGBA hex (e.g. 'ffffff').
-- `background`: Background color as RGB or RGBA. If not defined, background is transparent. *(Added in this fork)*
-- `inverted`: Inverts fcolor (e.g. '0000ff' becomes 'ffff00').
-- `debugborder`: Color for the bounding box outline, useful for layout debugging.
-- `update`: Update time in ms.
-- `visible`: Visibility expression.
-
-If `size` is given and the text is too large for the box, it will be cropped. Text is always vertically centered, ignoring descenders.
-
-Example:
-```
-Widget Debug {
-    class 'Truetype'
-    expression 'Test'
-    font '/usr/share/fonts/gnu-free/FreeSans.ttf'
-    width 60
-    height 80
-    fcolor 'ffffff'
-}
-```
+See the [TrueType Widget wiki page](https://github.com/amd989/lcd4linux-ax206/wiki/widget_truetype) for full field reference and examples.
 
 ## Driver mirroring
 
-This allows a second driver to mirror the normal driver.  Intended use case is where a machine has a local physical display (e.g. AX206) and you wish to view that screen remotely via VNC or X11.
+Allows a second driver (VNC or X11) to display a live copy of the primary display — useful for remote viewing of a physical AX206 display. Both drivers must be graphics displays with the same resolution.
 
-The mirror driver must be different from the main driver and both must be graphics displays with the same resolution.
-
-To use, define two `Display` sections and add a `Mirror` declaration:
-
-```
-Layout  'Compact'
-Display 'DPF'
-Mirror  'VNC'
-
-Display dpf {
-    driver      'DPF'
-    port        'usb0'
-    font        '6x8'
-    orientation 0
-    backlight   4
-    foreground  _white
-    background  _black
-    basecolor   _black
-}
-
-Display VNC {
-    Driver       'VNC'
-    Font         '6x8'
-    Port         '5900'
-    Xres         '480'
-    Yres         '320'
-    Bpp          '4'
-    Maxclients   '2'
-    Osd_showtime '2000'
-}
-```
-
-NB: Only tested with DPF paired with VNC or X11 drivers.
+See [AX206 Fork Features](https://github.com/amd989/lcd4linux-ax206/wiki/ax206_features#driver-mirroring) on the wiki for the full config example.
 
 ## Gauge Widget
 
-A circular arc gauge widget that fills proportionally to an expression value. Draws a ring arc using GD, with configurable start angle, sweep, thickness, and fill direction. Supports color thresholds and reverse fill mode.
+A circular arc gauge that fills proportionally to a value. Supports configurable start angle, sweep, ring thickness, fill direction, color thresholds, and reverse fill mode.
 
-Fields:
-- `class`: Must be 'Gauge'.
-- `expression`: The expression for the gauge value.
-- `width`: Width of the bounding box in pixels.
-- `height`: Height of the bounding box in pixels.
-- `min` / `max`: Value range. Defaults to 0–100.
-- `start`: Start angle in degrees (GD convention: 0 = 3 o'clock, increases clockwise). Default: 135.
-- `sweep`: Total arc sweep in degrees. Default: 270.
-- `thickness`: Ring thickness in pixels. If 0 or omitted, draws a filled pie wedge.
-- `direction`: Fill direction: 'CW' (clockwise, default) or 'CCW' (counter-clockwise).
-- `color`: Foreground (filled) arc color (RGB/RGBA). Default: bright green.
-- `background`: Background (unfilled) arc color (RGB/RGBA). Use `000000ff` for transparent.
-- `valuelow` / `colorlow`: Threshold and color for low values.
-- `valuehigh` / `colorhigh`: Threshold and color for high values.
-- `reverse`: Set to 1 to invert fill (foreground shows remaining portion).
-- `update`: Update time in ms.
-
-Example:
-```
-Widget CPU_Gauge {
-    class 'Gauge'
-    expression proc_stat::cpu('busy', 500)
-    width 66
-    height 66
-    min 0
-    max 100
-    start 180
-    sweep 360
-    thickness 5
-    color '35bf5c'
-    background '000000ff'
-    update 500
-    direction 'CCW'
-}
-```
+See the [Gauge Widget wiki page](https://github.com/amd989/lcd4linux-ax206/wiki/widget_gauge) for full field reference and examples.
 
 ## GraphicBar Widget
 
-A pixel-based bar graph widget for graphics displays. Key differences from the text-mode Bar widget:
-- Single value (no two-value kludge)
-- Pixel-based sizing and positioning
-- Supports negative minimum values (bar starts from the zero point)
-- Color thresholds for value ranges (e.g. green at low loads, yellow at moderate, red at high)
+A pixel-based bar graph for graphics displays. Supports pixel-level sizing, negative minimums, directional fill (N/E/S/W), color thresholds, and hollow style.
 
-Fields:
-- `class`: Must be 'GraphicBar'.
-- `expression`: The expression for the bar value.
-- `length`: Length of the bar axis in pixels.
-- `width`: Thickness of the bar in pixels.
-- `direction`: Direction of bar travel: 'N', 'E', 'S', or 'W'. Default is 'E'.
-- `min` / `max`: Axis range. If omitted, auto-ranges.
-- `color`: Nominal bar color (RGB/RGBA). Default: bright green.
-- `background`: Background color (RGB/RGBA). Default: dark gray.
-- `valuelow` / `colorlow`: Threshold and color for low values.
-- `valuehigh` / `colorhigh`: Threshold and color for high values.
-- `style`: Set to 'H' for hollow bar.
-- `update`: Update time in ms.
+See the [GraphicBar Widget wiki page](https://github.com/amd989/lcd4linux-ax206/wiki/widget_graphicbar) for full field reference and examples.
 
 ## Sparkline Widget
 
-A line graph widget that records historical values in a ring buffer and renders them as a connected line graph. Useful for visualizing trends over time such as temperature, CPU usage, or disk I/O.
+A line graph widget that records historical values in a ring buffer and renders a connected trend line. Auto-scales Y-axis by default; supports fixed range and color thresholds.
 
-- One sample per pixel column — a 140px wide widget stores 140 data points
-- Auto-scales Y-axis by default, with optional fixed `min`/`max` overrides
-- Color thresholds for value ranges (same as GraphicBar)
-
-Fields:
-- `class`: Must be 'Sparkline'.
-- `expression`: The expression to sample on each update.
-- `length`: Length of the graph axis in pixels (number of samples stored).
-- `width`: Thickness of the graph in pixels.
-- `min` / `max`: Y-axis range. If omitted, auto-scales to fit the data.
-- `color`: Line color (RGB/RGBA). Default: bright green.
-- `background`: Background color (RGB/RGBA). Default: dark gray.
-- `valuelow` / `colorlow`: Threshold and color for low values.
-- `valuehigh` / `colorhigh`: Threshold and color for high values.
-- `update`: Update/sample interval in ms.
-
-Example:
-```
-Widget CPU_Spark {
-    class      'Sparkline'
-    expression  proc_stat::cpu('user', 500)
-    width       50
-    length      140
-    color       '00ff00'
-    background  '333333'
-    min         0
-    max         100
-    update      1000
-}
-```
+See the [Sparkline Widget wiki page](https://github.com/amd989/lcd4linux-ax206/wiki/widget_sparkline) for full field reference and examples.
 
 ## precision function
 
-Formats floating point numbers with a fixed number of decimal places (adds trailing zeros for column alignment).  The output is a string, so use it after any math.
+Formats a float with a fixed number of decimal places (adds trailing zeros for alignment). Returns a string — apply it after any math.
 
-Example:
 ```
 expression  precision(file::readline(F_PW, 3), 3) . ' kW '
 ```
 
 ## Theme Editor
 
-A visual theme editor is included in the [`ThemeEditor/`](ThemeEditor/) directory. It is a cross-platform desktop application (Avalonia UI, .NET 10) that lets you open, preview, and edit lcd4linux theme config files without touching the raw text.
+A visual theme editor is included in the [`ThemeEditor/`](ThemeEditor/) directory — a cross-platform desktop app (Avalonia UI, .NET 10) for opening, previewing, and editing lcd4linux theme config files. Supports drag-to-reposition, a color picker, undo/redo, and zoom.
 
-Features:
-- Opens any lcd4linux `.conf` file and renders its widgets on a scaled canvas
-- Drag widgets to reposition them; positions are written back to the `Layout` section on save
-- Property panel on the right lets you edit widget fields — text, colors (with a color picker), numbers, dropdowns for `class` and `align` fields
-- Image widgets display their actual image file on the canvas
-- Zoom slider (50%–300%) for detailed layout work
-- Undo/redo support
-- Detects display orientation from the config (`Orientation` field) and sizes the canvas accordingly (480×320 landscape, 320×480 portrait)
-
-### Building the Theme Editor
-
-Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
-
-```bash
-cd ThemeEditor
-dotnet build
-dotnet run
-```
-
-### Usage
-
-1. Launch the editor and click **Load Theme**
-2. Browse to a theme `.conf` file (e.g. `themes/SimpleWhite/dpf_simplewhite.conf`)
-3. The display canvas shows all widgets at their configured positions
-4. Click a widget to select it and edit its properties in the panel on the right
-5. Drag widgets to reposition them on the canvas
-6. Click **Save Theme** to write changes back to the original `.conf` file
+See [AX206 Fork Features](https://github.com/amd989/lcd4linux-ax206/wiki/ax206_features#theme-editor) on the wiki for build instructions and usage.
 
 ## Themes
 
