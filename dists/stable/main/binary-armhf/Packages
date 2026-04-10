@@ -1,17 +1,17 @@
 Package: lcd4linux-ax206
-Version: 0.13.0-1
+Version: 0.14.0-1
 Architecture: armhf
 Maintainer: amd989 <amd989@users.noreply.github.com>
-Installed-Size: 247
+Installed-Size: 233
 Depends: libc6 (>= 2.34), libgd3 (>= 2.1.0~alpha~), libusb-1.0-0 (>= 2:1.0.8), libvncserver1 (>= 0.9.10), libx11-6
 Homepage: https://github.com/amd989/lcd4linux-ax206
 Priority: optional
 Section: utils
-Filename: pool/main/l/lcd4linux-ax206/lcd4linux-ax206_0.13.0-1_armhf.deb
-Size: 121216
-SHA256: 1093799548dfa8abc577ea9a816a2f4350ce449424891899bfe5aa94308faf7e
-SHA1: c79efabf68bd52991b10a6f4bbed72ac8046bab1
-MD5sum: 1ebcb2481ba6d4aa80a100727333c5a0
+Filename: pool/main/l/lcd4linux-ax206/lcd4linux-ax206_0.14.0-1_armhf.deb
+Size: 106536
+SHA256: 33bfce6f9518c7d89bbd02434ea7f6bb92052fa5d0fdc313d29f556689904c27
+SHA1: 2bfa947154c3b87800f1fa4a22a99305daa51957
+MD5sum: e4b3f50fc1f2f5db68f5dbf54b667264
 Description: LCD display driver for AX206 USB displays
  LCD4Linux fork focused on AX206 USB LCD displays (AIDA64 3.5" USB displays)
  with support for DPF, VNC, and X11 drivers. Reads system data via plugins
@@ -22,19 +22,19 @@ Description: LCD display driver for AX206 USB displays
 
 Package: lcd4linux-ax206-dbgsym
 Source: lcd4linux-ax206
-Version: 0.13.0-1
+Version: 0.14.0-1
 Auto-Built-Package: debug-symbols
 Architecture: armhf
 Maintainer: amd989 <amd989@users.noreply.github.com>
 Installed-Size: 307
-Depends: lcd4linux-ax206 (= 0.13.0-1)
+Depends: lcd4linux-ax206 (= 0.14.0-1)
 Priority: optional
 Section: debug
-Filename: pool/main/l/lcd4linux-ax206/lcd4linux-ax206-dbgsym_0.13.0-1_armhf.deb
-Size: 267208
-SHA256: 5909ef4daa1488bebc1bea2b0f5efc2819200d954ae40761fb1d74adef4384cf
-SHA1: 1fe215402ab9fcd24d6c3c72087141fece852c31
-MD5sum: a71c5827f591f4a05007057767adb563
+Filename: pool/main/l/lcd4linux-ax206/lcd4linux-ax206-dbgsym_0.14.0-1_armhf.deb
+Size: 267064
+SHA256: bee8c24a9a80d87a515441e12efcdcb26fedd03568c1709880f6dfff322ffb4b
+SHA1: 8d561a5e849d5d4920141f39d13c381e4caa277a
+MD5sum: 336a8ea4dbd6137fe49f1d24e941ff66
 Description: debug symbols for lcd4linux-ax206
-Build-Ids: 0b7e1b60bd37a1df95a93ebd208f0ed702221395
+Build-Ids: c84ca60253982649b8c5435751b9af51adc7632d
 

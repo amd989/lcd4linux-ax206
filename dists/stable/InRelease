@@ -4,44 +4,44 @@ Hash: SHA512
 Origin: lcd4linux-ax206
 Label: lcd4linux-ax206
 Codename: stable
-Date: Sun, 08 Mar 2026 01:28:35 UTC
+Date: Fri, 10 Apr 2026 02:46:28 UTC
 Architectures: amd64 arm64 armhf
 Components: main
 Description: LCD4Linux for AX206 USB displays
 MD5Sum:
- ac4db3baf21ad10ec6d2bddf92e40ae0 1614 main/binary-amd64/Packages
- e4865ec4eb5ecab09e1b234f787852e3 857 main/binary-amd64/Packages.gz
+ d6e62cf41271840cb9b6e2b4cc77ffd5 1614 main/binary-amd64/Packages
+ 5f956904b6d153386d8a6203b4559279 857 main/binary-amd64/Packages.gz
  0b0c5b9f215cd788ecbbbde660605d9f 129 main/binary-amd64/Release
- 4f55907d7f9442a28e918f8add3471d5 1614 main/binary-arm64/Packages
- ca733f28987c575893340c5d69bf117c 860 main/binary-arm64/Packages.gz
+ 952bf71e221384967034f5c1a2f3d697 1614 main/binary-arm64/Packages
+ b92d807b080574ddbe19ff2e0945e1a6 859 main/binary-arm64/Packages.gz
  d6d0ea8ae8d2e582a02a04bf4a7b91a8 129 main/binary-arm64/Release
- cd488c9d83758e6f2be4d43fd6a5b499 1614 main/binary-armhf/Packages
- 6c455beaf88b25a0296ae6cf2373c2d2 859 main/binary-armhf/Packages.gz
+ bf4035dde3e14c9a7334ea9981f3e05f 1614 main/binary-armhf/Packages
+ f29a152e687635bf8b56c8cd1a4042c9 860 main/binary-armhf/Packages.gz
  756d3839fa1fd92aeb8659f53272459f 129 main/binary-armhf/Release
 SHA1:
- faf00da77f6b00e780f999e4d72217d39dc3458c 1614 main/binary-amd64/Packages
- 381735f99098996ac3efa69da049fc5092f7a61a 857 main/binary-amd64/Packages.gz
+ 4f22d56a93f1810a5edcda8a03a642226b72c98c 1614 main/binary-amd64/Packages
+ 6b4eb63f4ebfd0f6ecb8cc46c92f9a0e28970ae4 857 main/binary-amd64/Packages.gz
  87e35a36a12e94962046a33deba99210e0fce543 129 main/binary-amd64/Release
- 4369a3e367415eef574b41d6b512e4bd55aab693 1614 main/binary-arm64/Packages
- 46df81f5197001f5ce85c31a032962aa702aeb57 860 main/binary-arm64/Packages.gz
+ 430ff4bd54e41eadba0a82077e397fe1370bc9c4 1614 main/binary-arm64/Packages
+ c17b6ab8ea6a429d94e21320e75a863bba1b203d 859 main/binary-arm64/Packages.gz
  82637edd6986cf072324a3e17fae43febc52980d 129 main/binary-arm64/Release
- 33e1d52cdbe13aa05629feea88bc8a143b77469f 1614 main/binary-armhf/Packages
- 1d1b0eabe880664b4f2ef9e8e7a1a301eb38468f 859 main/binary-armhf/Packages.gz
+ a23a8d6875a4a4632eb89d584c711237f65420f0 1614 main/binary-armhf/Packages
+ 41e02b3e01a7062ab2b667ff5da826585cd6f324 860 main/binary-armhf/Packages.gz
  bc0f9764ea246936d73a752e90d86e2aaeb34687 129 main/binary-armhf/Release
 SHA256:
- cb45cca9c1bc4de430bbf7c0426a430c86f24c15d7f252e0c84d2251f454d2ea 1614 main/binary-amd64/Packages
- 85e337079af134b2e7a62ba23a5fdaf846dd5635c17307dc2c749def59709e7d 857 main/binary-amd64/Packages.gz
+ 7533abdccd5b4df4cf3f765159c87e06ccdd5bb0486d30666b8ad1ac339ad7d7 1614 main/binary-amd64/Packages
+ 480d6363ddd65a4d892d2d05b31c8b87fd9bb709ea1802ed5043264720ecd476 857 main/binary-amd64/Packages.gz
  139c35c3bca72ec33590ce0e7fc3953fe5230b0f89e52e75964ce0ef2c5cb9a5 129 main/binary-amd64/Release
- 424eaaa4bd86eddbceaec46636008cb251d74aa3dba60dcacc229278c14cf784 1614 main/binary-arm64/Packages
- 30a7240b672461243b9ff02124d41fbff0fd46a5012611ee8bcfe096e3ea1d65 860 main/binary-arm64/Packages.gz
+ fd95043b9ae93e9fbdc39f5c9708e9d56ab05bae251370d789584c4511c4e723 1614 main/binary-arm64/Packages
+ d585d6997fa737d8942a0436b19bfbb3f33de0e64984faee694df1105d050883 859 main/binary-arm64/Packages.gz
  af89e720883caa4113ef63378e313fbf9c5fd74f456f3331113b52bb24503089 129 main/binary-arm64/Release
- 3ccf623082ee0571f11c10f90129ac426d7c600feefffd4bc82b520db229d925 1614 main/binary-armhf/Packages
- 7d1e4d662eab861f1456208d285cb206ed62a5b471bb843f6681ede78a05c529 859 main/binary-armhf/Packages.gz
+ 20f1afa6b96719cddcd7c4cafd597fddab7ebe5d334aabd8f6bf84b8326bd3b8 1614 main/binary-armhf/Packages
+ bbc1c2330e0f982a059838a36effb8247e40a8626157a30ef4a8278fb52e7ece 860 main/binary-armhf/Packages.gz
  d0a0e784f2eb933d7437a024d0195a860fdbee49f54d78db9fde7bc475341786 129 main/binary-armhf/Release
 -----BEGIN PGP SIGNATURE-----
 
-iHUEARYKAB0WIQR4ApcagzmD3WDNTB9opm47Dqb4JQUCaazQwwAKCRBopm47Dqb4
-JSPYAQChx5DL3Ual4WYcnycxKzbaxgKjuG0W6Fp9kKTmmCBW/wD+MDpsx1Rg0wKu
-8GI+tkduoFC7Wke6PzniGA0BxmrwTQ4=
-=+8it
+iHUEARYKAB0WIQR4ApcagzmD3WDNTB9opm47Dqb4JQUCadhkhAAKCRBopm47Dqb4
+JejOAQD7CNIygA530tMagR9Ylioae/thJXItQVGanytt35vtOgEA1wKRs3v5malh
+zpK2vb3R/eRN+UegeRkjxkJIwDDYdQs=
+=Ug5J
 -----END PGP SIGNATURE-----

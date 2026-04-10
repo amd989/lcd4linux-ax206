@@ -10,4 +10,4 @@ enabled=1
 gpgcheck=1
 gpgkey=https://amd989.github.io/lcd4linux-ax206/gpg.key
 REPOEOF
-echo "Done! You can now run: sudo dnf install lcd4linux-ax206"
+echo "Done! Run: sudo dnf install lcd4linux-ax206"
