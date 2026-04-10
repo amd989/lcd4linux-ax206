@@ -1,0 +1,51 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ThemeEditor.Views.AboutDialog"
+        Title="About"
+        Icon="/Assets/avalonia-logo.ico"
+        Width="360" Height="240"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#1B1B1F"
+        ShowInTaskbar="False">
+
+    <StackPanel Margin="32,28" Spacing="10">
+        <TextBlock Text="LCD4Linux Theme Editor"
+                   FontSize="18" FontWeight="Bold"
+                   Foreground="#D0D0E0"
+                   HorizontalAlignment="Center" />
+
+        <TextBlock Text="A visual editor for LCD4Linux AX206 theme files."
+                   FontSize="12" Foreground="#8888A0"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center" />
+
+        <Border Height="1" Background="#3A3A48" Margin="0,8" />
+
+        <TextBlock FontSize="12" Foreground="#A0A0B0" HorizontalAlignment="Center">
+            <Run Text="Source code and issue tracker:" />
+        </TextBlock>
+
+        <Button HorizontalAlignment="Center"
+                Background="Transparent"
+                BorderThickness="0"
+                Padding="0"
+                Cursor="Hand"
+                Click="GitHubLink_Click">
+            <TextBlock Text="github.com/amd989/lcd4linux-ax206"
+                       FontSize="12" Foreground="#60C0C4"
+                       TextDecorations="Underline" />
+        </Button>
+
+        <Button Content="Close"
+                HorizontalAlignment="Center"
+                Margin="0,12,0,0"
+                Padding="24,6"
+                Background="#0D7377"
+                Foreground="#FFFFFF"
+                CornerRadius="4"
+                BorderThickness="0"
+                Click="Close_Click" />
+    </StackPanel>
+</Window>

@@ -35,6 +35,11 @@ namespace ThemeEditor.Views
             else if (e.Key == Key.Y) { vm.UndoManager.Redo(); e.Handled = true; }
         }
 
+        private async void About_Click(object? sender, RoutedEventArgs e)
+        {
+            await new AboutDialog().ShowDialog(this);
+        }
+
         private async void LoadTheme_Click(object sender, RoutedEventArgs e)
         {
             var topLevel = TopLevel.GetTopLevel(this);
