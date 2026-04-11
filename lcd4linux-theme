@@ -1,0 +1,174 @@
+#!/bin/sh
+# lcd4linux-theme — theme manager for lcd4linux-ax206
+set -e
+
+VERSION="1.0.0"
+DATA_DIR=/usr/share/lcd4linux
+THEMES_DIR="$DATA_DIR/themes"
+CONFIG_FILE=/etc/lcd4linux/lcd4linux.conf
+CONFIG_DIR=/etc/lcd4linux
+MARKER_FILE="$CONFIG_DIR/.current-theme"
+SERVICE_NAME=lcd4linux-ax206
+
+get_description() {
+    case "$1" in
+        Cyberdeck)             echo "Multi-gauge: CPU, GPU, RAM, fan, FPS, network" ;;
+        Cyberpunk)             echo "Cyberpunk 2077-styled system monitor" ;;
+        Cyberpunk-net)         echo "Cyberpunk variant with download/upload speeds" ;;
+        LandscapeEarth)        echo "Earth-themed: CPU, GPU, RAM bars, temperature" ;;
+        LandscapeMagicBlue)    echo "Sci-fi: 4 radial gauges, network, disk usage" ;;
+        LandscapeModernDevice35) echo "Server dashboard: sparklines, memory, disk, uptime" ;;
+        NAS)                   echo "4-bay NAS: drive usage, size, temperature" ;;
+        OPNSense)              echo "OPNSense: network traffic, firewall, system health" ;;
+        SimpleBlue)            echo "Blue: CPU, RAM, GPU, temperature" ;;
+        SimpleBlueFall)        echo "Blue, alternate background" ;;
+        SimpleBlueGauge)       echo "Blue with radial arc gauges" ;;
+        SimpleCyberpunkGauge)  echo "Cyberpunk-styled radial gauges" ;;
+        SimpleFire)            echo "Fire-themed system monitor" ;;
+        SimpleFireGauge)       echo "Fire-themed radial gauges" ;;
+        SimpleGreen)           echo "Green: CPU, RAM, GPU, temperature" ;;
+        SimpleGreenFall)       echo "Green, alternate background" ;;
+        SimpleGreenGauge)      echo "Green with radial arc gauges" ;;
+        SimpleMulticolor)      echo "Multi-color variant" ;;
+        SimpleNeon)            echo "Neon-lit system monitor" ;;
+        SimpleNeonGauge)       echo "Neon radial gauges" ;;
+        SimpleOrange)          echo "Orange: CPU, RAM, GPU, temperature" ;;
+        SimpleOrangeFall)      echo "Orange, alternate background" ;;
+        SimpleOrangeGauge)     echo "Orange with radial arc gauges" ;;
+        SimplePurple)          echo "Purple: CPU, RAM, GPU, temperature" ;;
+        SimplePurpleFall)      echo "Purple, alternate background" ;;
+        SimplePurpleGauge)     echo "Purple with radial arc gauges" ;;
+        SimpleRed)             echo "Red: CPU, RAM, GPU, temperature" ;;
+        SimpleRedFall)         echo "Red, alternate background" ;;
+        SimpleRedGauge)        echo "Red with radial arc gauges" ;;
+        SimpleRedGaugeRedBg)   echo "Red gauges with red background" ;;
+        SimpleWhite)           echo "White: CPU, RAM, GPU, temperature" ;;
+        SimpleWhite-FreeBSD)   echo "White (FreeBSD variant)" ;;
+        SimpleWhiteNas)        echo "White 4-bay NAS: usage, size, temp sparkline" ;;
+        SimpleWhiteNasIO)      echo "White 4-bay NAS: usage, temp, I/O sparkline" ;;
+        SimpleYellow)          echo "Yellow: CPU, RAM, GPU, temperature" ;;
+        SimpleYellowFall)      echo "Yellow, alternate background" ;;
+        SimpleYellowGauge)     echo "Yellow with radial arc gauges" ;;
+        bash-dark-green)       echo "Terminal green-on-black: CPU, RAM, network, disk" ;;
+        bash-dark-green-gpu)   echo "Terminal green-on-black with GPU stats" ;;
+        *)                     echo "" ;;
+    esac
+}
+
+find_theme_conf() {
+    for f in "$THEMES_DIR/$1"/*.conf; do
+        [ -f "$f" ] && echo "$f" && return
+    done
+}
+
+require_root() {
+    if [ "$(id -u)" -ne 0 ]; then
+        echo "Error: 'lcd4linux-theme apply' requires root privileges." >&2
+        echo "Try: sudo lcd4linux-theme apply $1" >&2
+        exit 1
+    fi
+}
+
+cmd_list() {
+    if [ ! -d "$THEMES_DIR" ]; then
+        echo "No themes directory found at $THEMES_DIR" >&2
+        echo "Install the lcd4linux-ax206-themes package." >&2
+        exit 1
+    fi
+
+    echo "Available themes:"
+    echo ""
+    for dir in "$THEMES_DIR"/*/; do
+        [ -d "$dir" ] || continue
+        name=$(basename "$dir")
+        conf=$(find_theme_conf "$name")
+        [ -n "$conf" ] || continue
+        desc=$(get_description "$name")
+        printf "  %-28s %s\n" "$name" "$desc"
+    done
+    echo ""
+    echo "Use 'sudo lcd4linux-theme apply <name>' to activate a theme."
+}
+
+cmd_current() {
+    if [ ! -f "$CONFIG_FILE" ]; then
+        echo "No configuration file found at $CONFIG_FILE"
+        exit 1
+    fi
+    if [ -f "$MARKER_FILE" ]; then
+        theme=$(cat "$MARKER_FILE")
+        echo "Current theme: $theme"
+        if [ "$CONFIG_FILE" -nt "$MARKER_FILE" ]; then
+            echo "  (config has been modified since theme was applied)"
+        fi
+    else
+        echo "No theme applied. Configuration may be manually managed."
+    fi
+}
+
+cmd_apply() {
+    theme_name="$1"
+    if [ -z "$theme_name" ]; then
+        echo "Error: Missing theme name." >&2
+        echo "Usage: lcd4linux-theme apply <name>" >&2
+        echo "Run 'lcd4linux-theme list' to see available themes." >&2
+        exit 1
+    fi
+
+    require_root "$theme_name"
+
+    if [ ! -d "$THEMES_DIR/$theme_name" ]; then
+        echo "Error: Theme '$theme_name' not found." >&2
+        echo "Run 'lcd4linux-theme list' to see available themes." >&2
+        exit 1
+    fi
+
+    conf=$(find_theme_conf "$theme_name")
+    if [ -z "$conf" ]; then
+        echo "Error: No config file found in theme '$theme_name'." >&2
+        exit 1
+    fi
+
+    # Backup existing config if it differs
+    if [ -f "$CONFIG_FILE" ]; then
+        if ! cmp -s "$conf" "$CONFIG_FILE"; then
+            backup="$CONFIG_FILE.bak.$(date +%Y%m%d-%H%M%S)"
+            cp "$CONFIG_FILE" "$backup"
+            echo "Backed up current config to $backup"
+        fi
+    fi
+
+    # Install new config
+    mkdir -p "$CONFIG_DIR"
+    cp "$conf" "$CONFIG_FILE"
+    echo "$theme_name" > "$MARKER_FILE"
+    echo "Applied theme: $theme_name"
+
+    # Restart service if active
+    if systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
+        systemctl restart "$SERVICE_NAME"
+        echo "Service restarted."
+    else
+        echo "Start the service with: sudo systemctl start $SERVICE_NAME"
+    fi
+}
+
+usage() {
+    cat <<EOF
+lcd4linux-theme $VERSION — theme manager for lcd4linux-ax206
+
+Usage:
+  lcd4linux-theme list              List available themes
+  lcd4linux-theme apply <name>      Apply a theme (requires root)
+  lcd4linux-theme current           Show the current theme
+  lcd4linux-theme help              Show this help message
+EOF
+}
+
+case "${1:-help}" in
+    list)    cmd_list ;;
+    apply)   shift; cmd_apply "$@" ;;
+    current) cmd_current ;;
+    help|--help|-h) usage ;;
+    *)       echo "Unknown command: $1" >&2; usage; exit 1 ;;
+esac

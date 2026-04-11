@@ -21,6 +21,7 @@ override_dh_auto_install:
 override_dh_install:
 	dh_install
 	install -D -m 0644 dpf_320x240.conf debian/lcd4linux-ax206/etc/lcd4linux/lcd4linux.conf
+	chmod 0755 debian/lcd4linux-ax206-themes/usr/bin/lcd4linux-theme
 
 override_dh_auto_clean:
 	[ ! -f Makefile ] || dh_auto_clean
