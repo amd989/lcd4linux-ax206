@@ -431,6 +431,13 @@ if test "$PLUGIN_ICONV" = "yes"; then
       AC_CHECK_FUNC(iconv, [
          PLUGINS="$PLUGINS plugin_iconv.o"
          AC_DEFINE(PLUGIN_ICONV,1,[iconv charset converter plugin])
+         dnl On FreeBSD, GNU libiconv installed from ports renames iconv symbols
+         dnl in its headers (iconv_open -> libiconv_open, etc.) but iconv is also
+         dnl present in libc, so AC_CHECK_FUNC succeeds without -liconv. The port
+         dnl headers then cause link failures. Always link -liconv on FreeBSD.
+         if test "$is_freebsd" = "true"; then
+            PLUGINLIBS="$PLUGINLIBS -liconv"
+         fi
       ], [
          AC_CHECK_LIB(iconv, iconv, [
             PLUGINS="$PLUGINS plugin_iconv.o"
