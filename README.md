@@ -6,7 +6,7 @@ The 3.5" AX206 USB displays are cheap and widely available, but most of the soft
 
 This fork aims to fix that by providing ready-to-use themes ported from the [Turing Smart Screen](https://github.com/mathoudebine/turing-smart-screen-python) theme ecosystem and adapted to work with LCD4Linux's config system. In the process, new widgets were added: **Gauge** (circular arc rings) and **Sparkline** (line graph history); to support the variety of visual styles these themes use. The goal is to make it as easy as possible to plug in a display and have a polished system monitor running in minutes.
 
-The best source for general LCD4Linux information is [The unofficial LCD4Linux Wiki](https://wiki.lcd4linux.tk/doku.php/start).
+For more information visit the [LCD4Linux-ax206 Wiki](https://github.com/amd989/lcd4linux-ax206/wiki).
 
 ![Example](lcd4linux_example.png)
 

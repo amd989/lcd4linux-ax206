@@ -53,6 +53,13 @@ typedef struct WIDGET_SPARKLINE {
     PROPERTY valuehigh;         /* threshold above which to use colorhigh */
     PROPERTY background;        /* background color */
     PROPERTY samples;           /* optional max ring-buffer size (default: length) */
+    PROPERTY thickness;         /* line width in pixels (default 1) */
+    PROPERTY smooth;            /* 1 = Catmull-Rom smooth curve, 0 = straight segments */
+    PROPERTY smoothsteps;       /* subdivisions per segment when smooth (default 12) */
+    PROPERTY stroke;            /* solid | dashed | dotted */
+    PROPERTY valueblur;         /* binomial smooth passes on values (0=off); softens "square" I/O */
+    PROPERTY fillunder;         /* 1 = gradient fill from line color toward transparent toward min value */
+    PROPERTY fillalpha;         /* GD alpha at curve for fillunder (0..127, lower=stronger, default 44) */
     double *history;            /* ring buffer of sampled values */
     int nsamples;               /* size of ring buffer (<= length unless samples set larger) */
     int head;                   /* next write index */
