@@ -41,6 +41,7 @@ jobs:
                 build-essential debhelper autoconf automake libtool libtool-bin pkg-config \
                 libusb-1.0-0-dev libgd-dev libvncserver-dev \
                 libx11-dev libxext-dev libxpm-dev \
+                libmosquitto-dev \
                 git
               dpkg-buildpackage -us -uc -b
               echo "=== .deb build successful ==="
@@ -77,6 +78,7 @@ jobs:
               dnf install -y gcc make autoconf automake libtool pkgconfig \
                 libusbx-devel gd-devel libvncserver-devel \
                 libX11-devel libXext-devel libXpm-devel \
+                mosquitto-devel \
                 rpm-build git systemd-rpm-macros gettext-devel
               mkdir -p /root/rpmbuild/{SOURCES,SPECS}
               tar czf /root/rpmbuild/SOURCES/lcd4linux-ax206-0.11.0.tar.gz \

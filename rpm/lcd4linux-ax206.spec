@@ -19,11 +19,13 @@ BuildRequires:  libX11-devel
 BuildRequires:  libXext-devel
 BuildRequires:  libXpm-devel
 BuildRequires:  gettext-devel
+BuildRequires:  mosquitto-devel
 
 Requires:       libusbx
 Requires:       gd
 Requires:       libvncserver
 Requires:       libX11
+Requires:       mosquitto
 
 %description
 LCD4Linux fork focused on AX206 USB LCD displays (AIDA64 3.5" USB displays)

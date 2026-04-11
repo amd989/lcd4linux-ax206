@@ -47,6 +47,7 @@ jobs:
                 build-essential debhelper autoconf automake libtool libtool-bin pkg-config \
                 libusb-1.0-0-dev libgd-dev libvncserver-dev \
                 libx11-dev libxext-dev libxpm-dev \
+                libmosquitto-dev \
                 git
               # Update changelog version from tag
               sed -i "1s/([^)]*)/('"${{ steps.version.outputs.version }}"'-1)/" debian/changelog
@@ -95,6 +96,7 @@ jobs:
               dnf install -y gcc make autoconf automake libtool pkgconfig \
                 libusbx-devel gd-devel libvncserver-devel \
                 libX11-devel libXext-devel libXpm-devel \
+                mosquitto-devel \
                 rpm-build git systemd-rpm-macros gettext-devel
               VERSION='"${{ steps.version.outputs.version }}"'
               # RPM Version field forbids "-"; replace with "." (sorts lower, correct for pre-releases)
