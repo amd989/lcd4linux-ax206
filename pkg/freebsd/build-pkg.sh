@@ -24,6 +24,7 @@ mkdir -p "$STAGING_MAIN/usr/local/bin"
 mkdir -p "$STAGING_MAIN/usr/local/etc/rc.d"
 mkdir -p "$STAGING_MAIN/usr/local/etc/lcd4linux/examples"
 mkdir -p "$STAGING_MAIN/usr/local/share/lcd4linux"
+touch "$STAGING_MAIN/usr/local/share/lcd4linux/.keep"
 
 cp "$ROOT_DIR/lcd4linux" "$STAGING_MAIN/usr/local/bin/lcd4linux"
 chmod 755 "$STAGING_MAIN/usr/local/bin/lcd4linux"
@@ -37,7 +38,7 @@ if [ -f "$ROOT_DIR/lcd4linux.conf.sample" ]; then
 fi
 
 PLIST_MAIN="$(mktemp)"
-(cd "$STAGING_MAIN/usr/local" && find . -type f -o -type d | sed 's|^\./||' | grep -v '^$') > "$PLIST_MAIN"
+(cd "$STAGING_MAIN/usr/local" && find . -type f | sed 's|^\./||') > "$PLIST_MAIN"
 
 sed "s/\${VERSION}/$VERSION/g" "$PKG_DIR/+MANIFEST" > "$STAGING_MAIN/+MANIFEST"
 cp "$PKG_DIR/+POST_INSTALL" "$STAGING_MAIN/+POST_INSTALL"
