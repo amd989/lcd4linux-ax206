@@ -15,6 +15,9 @@ rcvar="lcd4linux_enable"
 command="/usr/local/bin/lcd4linux"
 command_args="-F -f ${lcd4linux_config}"
 
+# Working directory for resolving relative theme paths (fonts/, themes/)
+: ${lcd4linux_chdir:="/usr/local/share/lcd4linux"}
+
 pidfile="/var/run/${name}.pid"
 start_cmd="lcd4linux_start"
 stop_cmd="lcd4linux_stop"
@@ -23,11 +26,11 @@ lcd4linux_start()
 {
     if [ ! -f "${lcd4linux_config}" ]; then
         echo "Error: ${lcd4linux_config} not found."
-        echo "Copy an example: cp /usr/local/etc/lcd4linux/examples/dpf_320x240.conf ${lcd4linux_config}"
+        echo "Run: lcd4linux-theme apply SimpleBlue"
         return 1
     fi
     echo "Starting ${name}."
-    /usr/sbin/daemon -p ${pidfile} -f ${command} ${command_args}
+    /usr/sbin/daemon -p ${pidfile} -f /bin/sh -c "cd '${lcd4linux_chdir}' && exec ${command} ${command_args}"
 }
 
 lcd4linux_stop()

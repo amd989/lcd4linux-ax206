@@ -4,7 +4,8 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStartPre=/bin/sh -c 'test -f /etc/lcd4linux/lcd4linux.conf || { echo "No config found. Copy an example: sudo cp /etc/lcd4linux/examples/dpf_320x240.conf /etc/lcd4linux/lcd4linux.conf"; exit 1; }'
+WorkingDirectory=/usr/share/lcd4linux
+ExecStartPre=/bin/sh -c 'test -f /etc/lcd4linux/lcd4linux.conf || { echo "No config found. Run: sudo lcd4linux-theme apply SimpleBlue"; exit 1; }'
 ExecStart=/usr/bin/lcd4linux -F -f /etc/lcd4linux/lcd4linux.conf
 Restart=on-failure
 RestartSec=10

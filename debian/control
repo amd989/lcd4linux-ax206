@@ -27,3 +27,11 @@ Description: LCD display driver for AX206 USB displays
  .
  Features include pixel-level brightness control, VNC mirror display support,
  TrueType font rendering, and graphical bar widgets with color thresholds.
+
+Package: lcd4linux-ax206-themes
+Architecture: all
+Depends: lcd4linux-ax206, ${misc:Depends}
+Description: Themes and fonts for lcd4linux-ax206
+ Collection of 39 pre-built themes with background images and TrueType fonts
+ for AX206 USB LCD displays. Includes a theme management CLI (lcd4linux-theme)
+ for easy theme switching.

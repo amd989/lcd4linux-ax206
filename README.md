@@ -72,17 +72,24 @@ sudo pkg install lcd4linux-ax206
 
 ### What gets installed
 
-**Linux:**
+**Linux (`lcd4linux-ax206`):**
 - `/usr/bin/lcd4linux` — the binary
 - `/etc/lcd4linux/lcd4linux.conf` — default configuration (320x240 DPF layout)
 - `/etc/lcd4linux/examples/` — additional example configs
 - `lcd4linux-ax206.service` — systemd service unit
 
+**Linux (`lcd4linux-ax206-themes`, optional):**
+- `/usr/bin/lcd4linux-theme` — theme management CLI
+- `/usr/share/lcd4linux/themes/` — 39 pre-built themes
+- `/usr/share/lcd4linux/fonts/` — bundled TrueType fonts
+
 **FreeBSD:**
 - `/usr/local/bin/lcd4linux` — the binary
+- `/usr/local/bin/lcd4linux-theme` — theme management CLI
 - `/usr/local/etc/lcd4linux/lcd4linux.conf` — default configuration
 - `/usr/local/etc/lcd4linux/examples/` — additional example configs
-- `/usr/local/share/lcd4linux/themes/` — pre-built themes
+- `/usr/local/share/lcd4linux/themes/` — 39 pre-built themes
+- `/usr/local/share/lcd4linux/fonts/` — bundled TrueType fonts
 - `/usr/local/etc/rc.d/lcd4linux` — rc.d service script
 
 ### Starting the service
@@ -230,10 +237,29 @@ See [AX206 Fork Features](https://github.com/amd989/lcd4linux-ax206/wiki/ax206_f
 
 **[Browse the Theme Gallery →](themes/README.md)**
 
-To use a theme, point lcd4linux at its config file:
+### Using themes after installation
+
+Install the themes package, then use the `lcd4linux-theme` CLI:
 
 ```bash
-lcd4linux -F -c themes/SimpleWhite/dpf_simplewhite.conf
+sudo apt install lcd4linux-ax206-themes
+
+# List all available themes
+lcd4linux-theme list
+
+# Apply a theme (backs up your current config automatically)
+sudo lcd4linux-theme apply SimpleBlue
+
+# Check what's currently active
+lcd4linux-theme current
+```
+
+### Using themes from source
+
+Point lcd4linux directly at the config file from the repository root:
+
+```bash
+./lcd4linux -F -f themes/SimpleWhite/dpf_simplewhite.conf
 ```
 
 Original theme designs from [turing-smart-screen-python](https://github.com/mathoudebine/turing-smart-screen-python), adapted for lcd4linux. Theme authors: [@takattila](https://github.com/takattila), [@mathoudebine](https://github.com/mathoudebine), [@napobear](https://github.com/napobear), [@amiltonjr](https://github.com/amiltonjr). Licensed under GPL-3.0.
