@@ -13,7 +13,8 @@ Build-Depends: debhelper-compat (= 13),
                libvncserver-dev,
                libx11-dev,
                libxext-dev,
-               libxpm-dev
+               libxpm-dev,
+               libmosquitto-dev
 Standards-Version: 4.6.0
 Homepage: https://github.com/amd989/lcd4linux-ax206
 

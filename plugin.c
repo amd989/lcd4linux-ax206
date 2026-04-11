@@ -120,6 +120,9 @@ char *Plugins[] = {
 #ifdef PLUGIN_MPRIS_DBUS
     "mpris_dbus",
 #endif
+#ifdef PLUGIN_MQTT
+    "mqtt",
+#endif
 #ifdef PLUGIN_MYSQL
     "mysql",
 #endif
@@ -230,6 +233,8 @@ int plugin_init_mpd(void);
 void plugin_exit_mpd(void);
 int plugin_init_mpris_dbus(void);
 void plugin_exit_mpris_dbus(void);
+int plugin_init_mqtt(void);
+void plugin_exit_mqtt(void);
 int plugin_init_mysql(void);
 void plugin_exit_mysql(void);
 int plugin_init_netdev(void);
@@ -357,6 +362,9 @@ int plugin_init(void)
 #ifdef PLUGIN_MPRIS_DBUS
     plugin_init_mpris_dbus();
 #endif
+#ifdef PLUGIN_MQTT
+    plugin_init_mqtt();
+#endif
 #ifdef PLUGIN_MYSQL
     plugin_init_mysql();
 #endif
@@ -477,6 +485,9 @@ void plugin_exit(void)
 #endif
 #ifdef PLUGIN_MPRIS_DBUS
     plugin_exit_mpris_dbus();
+#endif
+#ifdef PLUGIN_MQTT
+    plugin_exit_mqtt();
 #endif
 #ifdef PLUGIN_MYSQL
     plugin_exit_mysql();
