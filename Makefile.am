@@ -162,6 +162,7 @@ plugin_loadavg.c              \
 plugin_meminfo.c              \
 plugin_mpd.c		      \
 plugin_mpris_dbus.c           \
+plugin_mqtt.c                 \
 plugin_mysql.c                \
 plugin_netdev.c               \
 plugin_netinfo.c              \
