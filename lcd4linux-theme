@@ -3,12 +3,37 @@
 set -e
 
 VERSION="1.0.0"
-DATA_DIR=/usr/share/lcd4linux
+
+# OS-specific configuration
+if [ "$(uname)" = "FreeBSD" ]; then
+    DATA_DIR=/usr/local/share/lcd4linux
+    CONFIG_DIR=/usr/local/etc/lcd4linux
+    SERVICE_NAME=lcd4linux
+    restart_service() {
+        if service "$SERVICE_NAME" status >/dev/null 2>&1; then
+            service "$SERVICE_NAME" restart
+            echo "Service restarted."
+        else
+            echo "Start the service with: sudo service $SERVICE_NAME start"
+        fi
+    }
+else
+    DATA_DIR=/usr/share/lcd4linux
+    CONFIG_DIR=/etc/lcd4linux
+    SERVICE_NAME=lcd4linux-ax206
+    restart_service() {
+        if systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
+            systemctl restart "$SERVICE_NAME"
+            echo "Service restarted."
+        else
+            echo "Start the service with: sudo systemctl start $SERVICE_NAME"
+        fi
+    }
+fi
+
 THEMES_DIR="$DATA_DIR/themes"
-CONFIG_FILE=/etc/lcd4linux/lcd4linux.conf
-CONFIG_DIR=/etc/lcd4linux
+CONFIG_FILE="$CONFIG_DIR/lcd4linux.conf"
 MARKER_FILE="$CONFIG_DIR/.current-theme"
-SERVICE_NAME=lcd4linux-ax206
 
 get_description() {
     case "$1" in
@@ -144,13 +169,7 @@ cmd_apply() {
     echo "$theme_name" > "$MARKER_FILE"
     echo "Applied theme: $theme_name"
 
-    # Restart service if active
-    if systemctl is-active --quiet "$SERVICE_NAME" 2>/dev/null; then
-        systemctl restart "$SERVICE_NAME"
-        echo "Service restarted."
-    else
-        echo "Start the service with: sudo systemctl start $SERVICE_NAME"
-    fi
+    restart_service
 }
 
 usage() {

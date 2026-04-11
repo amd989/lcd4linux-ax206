@@ -85,9 +85,11 @@ sudo pkg install lcd4linux-ax206
 
 **FreeBSD:**
 - `/usr/local/bin/lcd4linux` — the binary
+- `/usr/local/bin/lcd4linux-theme` — theme management CLI
 - `/usr/local/etc/lcd4linux/lcd4linux.conf` — default configuration
 - `/usr/local/etc/lcd4linux/examples/` — additional example configs
-- `/usr/local/share/lcd4linux/themes/` — pre-built themes
+- `/usr/local/share/lcd4linux/themes/` — 39 pre-built themes
+- `/usr/local/share/lcd4linux/fonts/` — bundled TrueType fonts
 - `/usr/local/etc/rc.d/lcd4linux` — rc.d service script
 
 ### Starting the service
