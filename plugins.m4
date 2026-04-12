@@ -55,7 +55,7 @@ for plugin in $plugins; do
             [available plugins:]
             [ apm,asterisk,button_exec,cpuinfo,dbus,diskstats,dvb,exec,event,]
             [ fifo,file,gps,hddtemp,huawei,i2c_sensors,iconv,imon,isdn,kvv,]
-            [ loadavg,meminfo,mpd,mpris_dbus,mysql,netdev,netinfo,pop3,ppp,]
+            [ loadavg,meminfo,mpd,mpris_dbus,mqtt,mysql,netdev,netinfo,pop3,ppp,]
 	    [ proc_stat,python,qnaplog,raspi,sample,seti,statfs,uname,uptime,]
             [ w1retap,wireless,xmms])
          AC_MSG_ERROR([run ./configure --with-plugins=...])
@@ -84,6 +84,7 @@ for plugin in $plugins; do
          PLUGIN_MEMINFO="yes"
          PLUGIN_MPD="yes"
 	 PLUGIN_MPRIS_DBUS="yes"
+         PLUGIN_MQTT="yes"
          PLUGIN_MYSQL="yes"
          PLUGIN_NETDEV="yes"
          PLUGIN_NETINFO="yes"
@@ -126,6 +127,7 @@ for plugin in $plugins; do
          PLUGIN_MEMINFO="no"
          PLUGIN_MPD="no"
 	 PLUGIN_MPRIS_DBUS="no"
+         PLUGIN_MQTT="no"
          PLUGIN_MYSQL="no"
          PLUGIN_NETDEV="no"
          PLUGIN_NETINFO="no"
@@ -212,7 +214,10 @@ for plugin in $plugins; do
 	 ;;
       mpris_dbus)
          PLUGIN_MPRIS_DBUS=$val
-         ;;	 
+         ;;
+      mqtt)
+         PLUGIN_MQTT=$val
+         ;;
       mysql)
          PLUGIN_MYSQL=$val
          ;;
@@ -426,6 +431,13 @@ if test "$PLUGIN_ICONV" = "yes"; then
       AC_CHECK_FUNC(iconv, [
          PLUGINS="$PLUGINS plugin_iconv.o"
          AC_DEFINE(PLUGIN_ICONV,1,[iconv charset converter plugin])
+         dnl On FreeBSD, GNU libiconv installed from ports renames iconv symbols
+         dnl in its headers (iconv_open -> libiconv_open, etc.) but iconv is also
+         dnl present in libc, so AC_CHECK_FUNC succeeds without -liconv. The port
+         dnl headers then cause link failures. Always link -liconv on FreeBSD.
+         if test "$is_freebsd" = "true"; then
+            PLUGINLIBS="$PLUGINLIBS -liconv"
+         fi
       ], [
          AC_CHECK_LIB(iconv, iconv, [
             PLUGINS="$PLUGINS plugin_iconv.o"
@@ -509,6 +521,19 @@ if test "$PLUGIN_MPRIS_DBUS" = "yes"; then
    fi
 fi
 
+
+# MQTT (Mosquitto)
+if test "$PLUGIN_MQTT" = "yes"; then
+   PKG_CHECK_MODULES(MOSQUITTO, libmosquitto >= 1.0, HAVE_MOSQUITTO="yes", HAVE_MOSQUITTO="no")
+   if test "x$HAVE_MOSQUITTO" == "xyes"; then
+      PLUGINS="$PLUGINS plugin_mqtt.o"
+      PLUGINLIBS="$PLUGINLIBS $MOSQUITTO_LIBS"
+      CPPFLAGS="$CPPFLAGS $MOSQUITTO_CFLAGS"
+      AC_DEFINE(PLUGIN_MQTT,1,[mqtt plugin])
+   else
+      AC_MSG_WARN(libmosquitto not found: mqtt plugin disabled)
+   fi
+fi
 
 # MySQL
 if test "$PLUGIN_MYSQL" = "yes"; then
