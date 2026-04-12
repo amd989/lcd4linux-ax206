@@ -33,6 +33,16 @@ and renders widgets onto the display.
 Features include pixel-level brightness control, VNC mirror display support,
 TrueType font rendering, and graphical bar widgets with color thresholds.
 
+%package themes
+Summary:        Themes and fonts for lcd4linux-ax206
+BuildArch:      noarch
+Requires:       lcd4linux-ax206
+
+%description themes
+Collection of 39 pre-built themes with background images and TrueType fonts
+for AX206 USB LCD displays. Includes a theme management CLI (lcd4linux-theme)
+for easy theme switching.
+
 %prep
 %setup -q
 # automake in gnu mode requires README; project uses README.md
@@ -46,10 +56,14 @@ make %{?_smp_mflags}
 
 %install
 install -D -m 0755 lcd4linux %{buildroot}%{_bindir}/lcd4linux
+install -D -m 0755 lcd4linux-theme %{buildroot}%{_bindir}/lcd4linux-theme
 install -D -m 0644 dpf_320x240.conf %{buildroot}%{_sysconfdir}/lcd4linux/examples/dpf_320x240.conf
 install -D -m 0644 lcd4linux.conf.sample %{buildroot}%{_sysconfdir}/lcd4linux/examples/lcd4linux.conf.sample
 install -D -m 0644 debian/lcd4linux-ax206.service %{buildroot}%{_unitdir}/lcd4linux-ax206.service
 install -D -m 0644 dpf_320x240.conf %{buildroot}%{_sysconfdir}/lcd4linux/lcd4linux.conf
+mkdir -p %{buildroot}%{_datadir}/lcd4linux
+cp -r themes %{buildroot}%{_datadir}/lcd4linux/themes
+cp -r fonts %{buildroot}%{_datadir}/lcd4linux/fonts
 
 %files
 %license COPYING
@@ -58,8 +72,14 @@ install -D -m 0644 dpf_320x240.conf %{buildroot}%{_sysconfdir}/lcd4linux/lcd4lin
 %{_unitdir}/lcd4linux-ax206.service
 %dir %{_sysconfdir}/lcd4linux
 %dir %{_sysconfdir}/lcd4linux/examples
+%dir %{_datadir}/lcd4linux
 %config(noreplace) %{_sysconfdir}/lcd4linux/lcd4linux.conf
 %config %{_sysconfdir}/lcd4linux/examples/*.conf
 %config %{_sysconfdir}/lcd4linux/examples/*.sample
+
+%files themes
+%{_bindir}/lcd4linux-theme
+%{_datadir}/lcd4linux/themes
+%{_datadir}/lcd4linux/fonts
 
 %changelog

@@ -2,7 +2,22 @@
 
 35+ ready-to-use themes for the AX206 3.5" USB display. Each folder contains a `.conf` file and a `preview.png`.
 
-To use a theme, point lcd4linux at its config file:
+## Applying a Theme
+
+**If you installed the `lcd4linux-ax206-themes` package**, use the `lcd4linux-theme` CLI:
+
+```bash
+# List all available themes
+lcd4linux-theme list
+
+# Apply a theme (backs up your current config automatically)
+sudo lcd4linux-theme apply SimpleBlue
+
+# Check what's currently active
+lcd4linux-theme current
+```
+
+**If you're running from source**, point lcd4linux directly at the config file:
 
 ```bash
 ./lcd4linux -F -f themes/<ThemeName>/<config>.conf

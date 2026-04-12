@@ -1,0 +1,5 @@
+#!/bin/sh
+echo "=== lcd4linux-ax206-themes installed ==="
+echo "  List themes:   lcd4linux-theme list"
+echo "  Apply a theme: lcd4linux-theme apply SimpleBlue"
+echo "  Current theme: lcd4linux-theme current"
