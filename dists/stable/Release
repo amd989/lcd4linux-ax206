@@ -1,37 +1,37 @@
 Origin: lcd4linux-ax206
 Label: lcd4linux-ax206
 Codename: stable
-Date: Fri, 10 Apr 2026 02:46:28 UTC
+Date: Sun, 12 Apr 2026 11:48:56 UTC
 Architectures: amd64 arm64 armhf
 Components: main
 Description: LCD4Linux for AX206 USB displays
 MD5Sum:
- d6e62cf41271840cb9b6e2b4cc77ffd5 1614 main/binary-amd64/Packages
- 5f956904b6d153386d8a6203b4559279 857 main/binary-amd64/Packages.gz
+ 764c41136e81597854d3b11acef012b7 2403 main/binary-amd64/Packages
+ 04864de84aec91a5b85a0d99e7949682 1102 main/binary-amd64/Packages.gz
  0b0c5b9f215cd788ecbbbde660605d9f 129 main/binary-amd64/Release
- 952bf71e221384967034f5c1a2f3d697 1614 main/binary-arm64/Packages
- b92d807b080574ddbe19ff2e0945e1a6 859 main/binary-arm64/Packages.gz
+ d2d856a7f54ef824db04ec1cd7470e70 2403 main/binary-arm64/Packages
+ b86c2db32afe06b967a92406cf2c37b2 1106 main/binary-arm64/Packages.gz
  d6d0ea8ae8d2e582a02a04bf4a7b91a8 129 main/binary-arm64/Release
- bf4035dde3e14c9a7334ea9981f3e05f 1614 main/binary-armhf/Packages
- f29a152e687635bf8b56c8cd1a4042c9 860 main/binary-armhf/Packages.gz
+ 60418b82b5546742c8e0cf10adb5907f 2403 main/binary-armhf/Packages
+ 0ff13eff7100ae35af3afd52c45b3b01 1106 main/binary-armhf/Packages.gz
  756d3839fa1fd92aeb8659f53272459f 129 main/binary-armhf/Release
 SHA1:
- 4f22d56a93f1810a5edcda8a03a642226b72c98c 1614 main/binary-amd64/Packages
- 6b4eb63f4ebfd0f6ecb8cc46c92f9a0e28970ae4 857 main/binary-amd64/Packages.gz
+ cc599ebaaefe303e0eb05132811c05984effc527 2403 main/binary-amd64/Packages
+ 16a80927423e7ae5cd4333692140394bccf842d6 1102 main/binary-amd64/Packages.gz
  87e35a36a12e94962046a33deba99210e0fce543 129 main/binary-amd64/Release
- 430ff4bd54e41eadba0a82077e397fe1370bc9c4 1614 main/binary-arm64/Packages
- c17b6ab8ea6a429d94e21320e75a863bba1b203d 859 main/binary-arm64/Packages.gz
+ f3a1d2649ee1c994b898d95330a58973df25cba6 2403 main/binary-arm64/Packages
+ 872126f5def6f827eb8f226b93459a3b53375aa3 1106 main/binary-arm64/Packages.gz
  82637edd6986cf072324a3e17fae43febc52980d 129 main/binary-arm64/Release
- a23a8d6875a4a4632eb89d584c711237f65420f0 1614 main/binary-armhf/Packages
- 41e02b3e01a7062ab2b667ff5da826585cd6f324 860 main/binary-armhf/Packages.gz
+ 65aee185cc764962440409a1fb00b749371dfcd7 2403 main/binary-armhf/Packages
+ 5ec62d71491f49896142b114d98d6b6fc96ad150 1106 main/binary-armhf/Packages.gz
  bc0f9764ea246936d73a752e90d86e2aaeb34687 129 main/binary-armhf/Release
 SHA256:
- 7533abdccd5b4df4cf3f765159c87e06ccdd5bb0486d30666b8ad1ac339ad7d7 1614 main/binary-amd64/Packages
- 480d6363ddd65a4d892d2d05b31c8b87fd9bb709ea1802ed5043264720ecd476 857 main/binary-amd64/Packages.gz
+ b25f303bc6dd9c2d978e35a7cf1b99b1acfb7cb189265056089446ba4d5ed53b 2403 main/binary-amd64/Packages
+ fb6f3b8171f2b7083e9adf1b56e7abffad60840d4e0f1a9b31684989fb0c6e24 1102 main/binary-amd64/Packages.gz
  139c35c3bca72ec33590ce0e7fc3953fe5230b0f89e52e75964ce0ef2c5cb9a5 129 main/binary-amd64/Release
- fd95043b9ae93e9fbdc39f5c9708e9d56ab05bae251370d789584c4511c4e723 1614 main/binary-arm64/Packages
- d585d6997fa737d8942a0436b19bfbb3f33de0e64984faee694df1105d050883 859 main/binary-arm64/Packages.gz
+ 59316ad2d8657fd5818036e451821a0d39f89990d4424bf34e783de02e2cc970 2403 main/binary-arm64/Packages
+ 57ba53125cd7c3a14a6494389e30a4c77f83c76e0eff6ff313101150bceb19b1 1106 main/binary-arm64/Packages.gz
  af89e720883caa4113ef63378e313fbf9c5fd74f456f3331113b52bb24503089 129 main/binary-arm64/Release
- 20f1afa6b96719cddcd7c4cafd597fddab7ebe5d334aabd8f6bf84b8326bd3b8 1614 main/binary-armhf/Packages
- bbc1c2330e0f982a059838a36effb8247e40a8626157a30ef4a8278fb52e7ece 860 main/binary-armhf/Packages.gz
+ c7351e9f7628d6b8a9c9c7b80b7f804fcfe0bdf6b5054d79e21ac53739a7cb53 2403 main/binary-armhf/Packages
+ b9716bbb9a7975a2c3fe4dc90d33f8b0d089246e1c3b9802fb2a279b3f029310 1106 main/binary-armhf/Packages.gz
  d0a0e784f2eb933d7437a024d0195a860fdbee49f54d78db9fde7bc475341786 129 main/binary-armhf/Release
