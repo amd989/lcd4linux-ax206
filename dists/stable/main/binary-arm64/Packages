@@ -1,5 +1,5 @@
 Package: lcd4linux-ax206
-Version: 0.15.0-1
+Version: 0.15.1-1
 Architecture: arm64
 Maintainer: amd989 <amd989@users.noreply.github.com>
 Installed-Size: 340
@@ -7,11 +7,11 @@ Depends: libc6 (>= 2.34), libgd3 (>= 2.1.0~alpha~), libmosquitto1 (>= 1.2), libu
 Homepage: https://github.com/amd989/lcd4linux-ax206
 Priority: optional
 Section: utils
-Filename: pool/main/l/lcd4linux-ax206/lcd4linux-ax206_0.15.0-1_arm64.deb
-Size: 120556
-SHA256: 366ccdd37cef52b6b6e18f8f4f9f8a1341d9ed93b47c0c5e0fab763e3804669b
-SHA1: 931712b18a9e69e7bc90f10e60cc6e7e784b418b
-MD5sum: fa96922f9f8c0afe0b7ef396ecaccde1
+Filename: pool/main/l/lcd4linux-ax206/lcd4linux-ax206_0.15.1-1_arm64.deb
+Size: 120564
+SHA256: 9b7249727b748871ab3b826480f8e0a154320a498b3f943c86ac13f7e352680f
+SHA1: 5e725286bb8ad842ac593c444ac0c0cba1bc7689
+MD5sum: 07df42bbe2117bb1ed211492723b2e28
 Description: LCD display driver for AX206 USB displays
  LCD4Linux fork focused on AX206 USB LCD displays (AIDA64 3.5" USB displays)
  with support for DPF, VNC, and X11 drivers. Reads system data via plugins
@@ -22,25 +22,25 @@ Description: LCD display driver for AX206 USB displays
 
 Package: lcd4linux-ax206-dbgsym
 Source: lcd4linux-ax206
-Version: 0.15.0-1
+Version: 0.15.1-1
 Auto-Built-Package: debug-symbols
 Architecture: arm64
 Maintainer: amd989 <amd989@users.noreply.github.com>
 Installed-Size: 325
-Depends: lcd4linux-ax206 (= 0.15.0-1)
+Depends: lcd4linux-ax206 (= 0.15.1-1)
 Priority: optional
 Section: debug
-Filename: pool/main/l/lcd4linux-ax206/lcd4linux-ax206-dbgsym_0.15.0-1_arm64.deb
+Filename: pool/main/l/lcd4linux-ax206/lcd4linux-ax206-dbgsym_0.15.1-1_arm64.deb
 Size: 282100
-SHA256: a40871a3c23e6113b6ffd4893f05b992d229f37d86cb5edf117807211fefcdd6
-SHA1: 91756b12145e7c87a453c369af0259200b34ca32
-MD5sum: ebadcd98bffb3c7017124bc75d9dcdd5
+SHA256: 8830d6f0f5dfa9a8ae16e286bd88b092156550b19602c8427972b9285b48f7ab
+SHA1: c98014eb86558be0c764befa636e72c5c0127e10
+MD5sum: 651baf039d7eb93a14b3318da6b8d68e
 Description: debug symbols for lcd4linux-ax206
 Build-Ids: 962d9a16e0ab28e9b7a79dacad272457bccf89ad
 
 Package: lcd4linux-ax206-themes
 Source: lcd4linux-ax206
-Version: 0.15.0-1
+Version: 0.15.1-1
 Architecture: all
 Maintainer: amd989 <amd989@users.noreply.github.com>
 Installed-Size: 16770
@@ -48,11 +48,11 @@ Depends: lcd4linux-ax206
 Homepage: https://github.com/amd989/lcd4linux-ax206
 Priority: optional
 Section: utils
-Filename: pool/main/l/lcd4linux-ax206/lcd4linux-ax206-themes_0.15.0-1_all.deb
-Size: 5031816
-SHA256: 134e04e0dad6c34af8eb7405bc086044f005b25fba7925048013b056750dc280
-SHA1: f8171f8b4a816b5e80abfafc82c2a86082c11976
-MD5sum: 48615fdde8c958ed5687d451f3ffea51
+Filename: pool/main/l/lcd4linux-ax206/lcd4linux-ax206-themes_0.15.1-1_all.deb
+Size: 5030008
+SHA256: df16be01731f3479a5efc47557cd443f45abbe797ac7bfd79f44f2d6956c7520
+SHA1: 5f313d63fb1b438054b634fbfb4efbc10c95af04
+MD5sum: 6932f8156bc93f5f5b62e5977a1a396b
 Description: Themes and fonts for lcd4linux-ax206
  Collection of 39 pre-built themes with background images and TrueType fonts
  for AX206 USB LCD displays. Includes a theme management CLI (lcd4linux-theme)
