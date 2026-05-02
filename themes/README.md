@@ -146,4 +146,4 @@ Specialized layouts for networking gear and router dashboards.
 | | | |
 |:---:|:---:|:---:|
 | **[OPNSense](OPNSense/)** | **[NAS](NAS/)** | |
-| [![OPNSense](OPNSense/Preview.png)](OPNSense/dpf_opnsense.conf)<br>*OPNSense-styled dashboard with network traffic sparklines, connected devices, system health, and firewall stats. Uses Source Sans 3 font.* | [![NAS](NAS/preview.png)](NAS/dpf_4baynas.conf)<br>*4-bay NAS dashboard with per-bay usage, temperature, I/O, mergerfs summary, and network header. JetBrains Mono. Edit `bay*_path`, `bay*_blk`, and `main_storage` in the config for your system.* | |
+| [![OPNSense](OPNSense/preview.png)](OPNSense/dpf_opnsense.conf)<br>*OPNSense-styled dashboard with network traffic sparklines, connected devices, system health, and firewall stats. Uses Source Sans 3 font.* | [![NAS](NAS/preview.png)](NAS/dpf_4baynas.conf)<br>*4-bay NAS dashboard with per-bay usage, temperature, I/O, mergerfs summary, and network header. JetBrains Mono. Edit `bay*_path`, `bay*_blk`, and `main_storage` in the config for your system.* | |
