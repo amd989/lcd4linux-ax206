@@ -14,12 +14,19 @@ jobs:
     strategy:
       matrix:
         include:
+          # arch_indep picks the one arm that also builds the
+          # Architecture: all packages. lcd4linux-ax206-themes is one, so
+          # building it everywhere yields three different files under a
+          # single name, which then overwrite each other in the release job.
           - arch: amd64
             docker_platform: linux/amd64
+            arch_indep: true
           - arch: arm64
             docker_platform: linux/arm64
+            arch_indep: false
           - arch: armhf
             docker_platform: linux/arm/v7
+            arch_indep: false
 
     steps:
       - name: Checkout
@@ -54,6 +61,20 @@ jobs:
               mv ../*.deb output/
             '
 
+      - name: Drop the duplicate arch-independent packages
+        if: ${{ !matrix.arch_indep }}
+        run: |
+          # lcd4linux-ax206-themes is Architecture: all, so every arm builds
+          # its own copy under one name. Only one copy may reach the release.
+          #
+          # dpkg-buildpackage -B would skip them at the source, but
+          # debian/rules has a single override_dh_install that chmods inside
+          # the themes staging directory, and a binary-arch-only build never
+          # creates it. Splitting that override into -arch and -indep is the
+          # real fix; until then the build runs exactly as before and the
+          # extra copies are removed here.
+          rm -fv output/*_all.deb
+
       - name: Upload .deb artifact
         uses: actions/upload-artifact@v4
         with:
@@ -65,10 +86,13 @@ jobs:
     strategy:
       matrix:
         include:
+          # As with the debs, one arm owns the noarch subpackages.
           - arch: x86_64
             docker_platform: linux/amd64
+            arch_indep: true
           - arch: aarch64
             docker_platform: linux/arm64
+            arch_indep: false
 
     steps:
       - name: Checkout
@@ -109,6 +133,15 @@ jobs:
               mkdir -p /build/output
               cp /root/rpmbuild/RPMS/*/*.rpm /build/output/
             '
+
+      - name: Drop the duplicate noarch packages
+        if: ${{ !matrix.arch_indep }}
+        run: |
+          # rpmbuild emits every subpackage, and lcd4linux-ax206-themes is
+          # BuildArch: noarch, so each arm produces its own copy under the
+          # same name. There is no rpmbuild flag to leave a noarch
+          # subpackage out, so the extra copies are removed here instead.
+          rm -fv output/*.noarch.rpm
 
       - name: Upload .rpm artifact
         uses: actions/upload-artifact@v4
@@ -234,11 +267,44 @@ jobs:
     needs: [build, build-rpm, build-freebsd, build-themeeditor]
     runs-on: ubuntu-latest
     steps:
+      # Deliberately not merge-multiple. That writes every artifact into
+      # one directory, so two jobs emitting the same filename download over
+      # each other in parallel, which is how a torn themes rpm reached a
+      # published release and sat there unnoticed. One directory per
+      # artifact, assembled below with a collision check, so a duplicate
+      # fails the build instead of corrupting a package.
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: packages
-          merge-multiple: true
+          path: artifacts
+
+      - name: Collect the release files
+        run: |
+          set -euo pipefail
+          mkdir -p packages
+          status=0
+
+          while IFS= read -r src; do
+            name=$(basename "$src")
+            dst="packages/$name"
+
+            if [ ! -e "$dst" ]; then
+              cp "$src" "$dst"
+              continue
+            fi
+
+            if cmp -s "$src" "$dst"; then
+              # The FreeBSD package is attached on its own and again inside
+              # the pkg repository artifact. Same bytes, so one copy is right.
+              echo "duplicate, identical: $name"
+            else
+              echo "::error::$name comes from more than one job with differing content. Attaching it would publish whichever copy landed last, or a mixture of the two."
+              status=1
+            fi
+          done < <(find artifacts -type f | sort)
+
+          ls -l packages
+          exit "$status"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
