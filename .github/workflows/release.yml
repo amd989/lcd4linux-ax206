@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   build:
@@ -226,18 +224,6 @@ jobs:
           name: pkg-freebsd-amd64
           path: dist/*.pkg
 
-      - name: Build FreeBSD pkg repo
-        run: |
-          mkdir -p repo/freebsd
-          cp dist/*.pkg repo/freebsd/
-          pkg repo repo/freebsd/
-
-      - name: Upload pkg repo
-        uses: actions/upload-artifact@v4
-        with:
-          name: pkg-repo-freebsd
-          path: repo/freebsd/
-
       - name: Clean up
         if: always()
         run: |
@@ -266,170 +252,34 @@ jobs:
           generate_release_notes: true
           prerelease: ${{ contains(github.ref_name, '-') }}
 
-  publish-repos:
-    needs: [build, build-rpm, build-freebsd]
+  # Packages are published centrally by amd989/packages, which serves
+  # packages.alejandro.md. This repository builds, attaches the artifacts to
+  # its own GitHub Release, and asks the publisher to pick that release up.
+  # The signing key and the storage credentials live only over there.
+  publish:
+    needs: [release]
     if: ${{ !contains(github.ref_name, '-') }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          fetch-depth: 0
-        continue-on-error: true
-
-      - name: Initialize gh-pages if needed
-        run: |
-          if [ ! -f index.html ]; then
-            git init
-            git checkout -b gh-pages
-          fi
-
-      - name: Download deb artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: deb-*
-          path: incoming-deb
-          merge-multiple: true
-
-      - name: Download rpm artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: rpm-*
-          path: incoming-rpm
-          merge-multiple: true
-
-      - name: Download FreeBSD pkg repo
-        uses: actions/download-artifact@v4
-        with:
-          pattern: pkg-repo-freebsd
-          path: incoming-pkg
-          merge-multiple: true
-
-      - name: Install repo tools
-        run: sudo apt-get update && sudo apt-get install -y reprepro createrepo-c
-
-      - name: Import or generate GPG key
-        run: |
-          if [ -n "${{ secrets.GPG_PRIVATE_KEY }}" ]; then
-            echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
-            GPG_KEY_ID=$(gpg --list-secret-keys --keyid-format long | grep sec | head -1 | awk '{print $2}' | cut -d'/' -f2)
-          else
-            # Generate a temporary key for signing (user should replace with proper key)
-            cat > /tmp/gpg-batch <<GPGEOF
-              %no-protection
-              Key-Type: RSA
-              Key-Length: 4096
-              Subkey-Type: RSA
-              Subkey-Length: 4096
-              Name-Real: lcd4linux-ax206
-              Name-Email: amd989@users.noreply.github.com
-              Expire-Date: 0
-          GPGEOF
-            gpg --batch --gen-key /tmp/gpg-batch
-            GPG_KEY_ID=$(gpg --list-secret-keys --keyid-format long | grep sec | head -1 | awk '{print $2}' | cut -d'/' -f2)
-            echo "::warning::Using auto-generated GPG key. For production, add GPG_PRIVATE_KEY secret."
-          fi
-          echo "GPG_KEY_ID=$GPG_KEY_ID" >> "$GITHUB_ENV"
-          gpg --armor --export "$GPG_KEY_ID" > gpg.key
-
-      - name: Configure reprepro
-        run: |
-          mkdir -p conf
-          cat > conf/distributions <<EOF
-          Origin: lcd4linux-ax206
-          Label: lcd4linux-ax206
-          Codename: stable
-          Architectures: amd64 arm64 armhf
-          Components: main
-          Description: LCD4Linux for AX206 USB displays
-          SignWith: ${{ env.GPG_KEY_ID }}
-          EOF
-
-      - name: Add deb packages to APT repo
-        run: |
-          for deb in incoming-deb/*.deb; do
-            reprepro includedeb stable "$deb"
-          done
-
-      - name: Create YUM/DNF repo
-        run: |
-          rm -rf rpm/packages rpm/repodata
-          mkdir -p rpm/packages
-          cp incoming-rpm/*.rpm rpm/packages/
-          gpg --batch --pinentry-mode loopback --detach-sign --armor rpm/packages/*.rpm 2>/dev/null || true
-          createrepo_c rpm/
-          gpg --batch --pinentry-mode loopback --detach-sign --armor rpm/repodata/repomd.xml
-
-      - name: Fetch index page from source
-        run: |
-          curl -fsSL "https://raw.githubusercontent.com/amd989/lcd4linux-ax206/${GITHUB_REF_NAME}/gh-pages/index.html" -o index.html
-          sed -i "s/{{VERSION}}/${GITHUB_REF_NAME#v}/g" index.html
-
-      - name: Create APT setup script
-        run: |
-          cat > setup-apt.sh <<'EOF'
-          #!/bin/bash
-          set -e
-          echo "Adding lcd4linux-ax206 APT repository..."
-          curl -fsSL https://amd989.github.io/lcd4linux-ax206/gpg.key | gpg --dearmor -o /usr/share/keyrings/lcd4linux-ax206.gpg
-          echo "deb [signed-by=/usr/share/keyrings/lcd4linux-ax206.gpg] https://amd989.github.io/lcd4linux-ax206 stable main" > /etc/apt/sources.list.d/lcd4linux-ax206.list
-          apt-get update
-          echo "Done! Run: sudo apt install lcd4linux-ax206"
-          EOF
-          chmod +x setup-apt.sh
-
-      - name: Create DNF setup script
-        run: |
-          cat > setup-rpm.sh <<'EOF'
-          #!/bin/bash
-          set -e
-          echo "Adding lcd4linux-ax206 YUM/DNF repository..."
-          rpm --import https://amd989.github.io/lcd4linux-ax206/gpg.key
-          cat > /etc/yum.repos.d/lcd4linux-ax206.repo <<REPOEOF
-          [lcd4linux-ax206]
-          name=lcd4linux-ax206
-          baseurl=https://amd989.github.io/lcd4linux-ax206/rpm/
-          enabled=1
-          gpgcheck=1
-          gpgkey=https://amd989.github.io/lcd4linux-ax206/gpg.key
-          REPOEOF
-          echo "Done! Run: sudo dnf install lcd4linux-ax206"
-          EOF
-          chmod +x setup-rpm.sh
-
-      - name: Stage FreeBSD pkg repo
-        run: |
-          mkdir -p freebsd
-          cp incoming-pkg/* freebsd/ 2>/dev/null || true
-
-      - name: Create FreeBSD pkg setup script
-        run: |
-          cat > setup-pkg.sh <<'EOF'
-          #!/bin/sh
-          set -e
-          echo "Adding lcd4linux-ax206 FreeBSD pkg repository..."
-          mkdir -p /usr/local/etc/pkg/repos
-          cat > /usr/local/etc/pkg/repos/lcd4linux-ax206.conf <<REPOEOF
-          lcd4linux-ax206: {
-            url: "https://amd989.github.io/lcd4linux-ax206/freebsd",
-            enabled: yes,
-            signature_type: "none"
-          }
-          REPOEOF
-          pkg update
-          echo "Done! Run: pkg install lcd4linux-ax206"
-          EOF
-          chmod +x setup-pkg.sh
-
-      - name: Deploy to GitHub Pages
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Clean up build artifacts, keep repo files
-          rm -rf incoming-deb incoming-rpm incoming-pkg conf
-          git add -A
-          git commit -m "Update repos for ${GITHUB_REF_NAME}" || true
-          git push origin gh-pages --force
+      - name: Publish to packages.alejandro.md
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PACKAGES_DISPATCH_TOKEN }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::PACKAGES_DISPATCH_TOKEN is not set. The release exists, but packages.alejandro.md was not asked to publish it. Set the secret, then run the publish workflow in amd989/packages by hand for $REPO $TAG."
+            exit 1
+          fi
+          # -f rather than -F: -F converts values that look like numbers or
+          # booleans, and the publisher expects the tag as a string.
+          gh api repos/amd989/packages/dispatches \
+            -f event_type=publish \
+            -f "client_payload[repo]=$REPO" \
+            -f "client_payload[tag]=$TAG"
+          {
+            echo "### Asked packages.alejandro.md to publish \`$REPO\` \`$TAG\`"
+            echo
+            echo "Follow it at https://github.com/amd989/packages/actions/workflows/publish.yaml"
+          } >> "$GITHUB_STEP_SUMMARY"
